@@ -149,6 +149,34 @@
   .kind-row .d { font-weight: 700; text-align: right; }
   .kind-row .d small { display: block; font-weight: 400; font-size: 12px; color: var(--sub); }
 
+  /* 月のカレンダー */
+  .cal-open { display: block; width: 100%; margin-top: 12px; border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px; font-size: 15px; font-weight: 700; color: var(--accent); cursor: pointer; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-head h2 { margin: 0; font-size: 20px; color: var(--ink); }
+  .cal-nav { border: 1px solid var(--line); background: var(--card); border-radius: 8px; width: 44px; height: 40px; font-size: 18px; cursor: pointer; }
+  .cal-nav:disabled { opacity: .3; cursor: default; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal .h { text-align: center; font-size: 12px; color: var(--sub); padding: 2px 0; }
+  .cal .h.sun { color: var(--k); } .cal .h.sat { color: var(--r); }
+  .cal .c { background: var(--soft); border-radius: 6px; min-height: 58px; padding: 3px 2px; text-align: center; min-width: 0; }
+  .cal .c.blank { background: none; }
+  .cal .c.past { opacity: .45; }
+  .cal .c.today { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .cal .c .n { font-size: 14px; font-weight: 700; }
+  .cal .c.sun .n { color: var(--k); } .cal .c.sat .n { color: var(--r); }
+  .cal .c .t { font-size: 10.5px; font-weight: 700; line-height: 1.25; white-space: nowrap; overflow: hidden; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; font-size: 13px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .cal-note { font-size: 13px; color: var(--sub); margin: 12px 0 0; }
+
+  /* 大型ごみの予約 */
+  .reserve { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: var(--soft); font-size: 14px; }
+  .reserve a.btn { display: inline-block; margin: 2px 0 8px; padding: 9px 14px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); font-weight: 700; text-decoration: none; }
+  .reserve p { margin: 2px 0; }
+  .reserve a.tel { color: var(--ink); font-weight: 700; }
+  .kind-row .rsv { font-size: 12px; color: var(--accent); font-weight: 700; display: block; }
+
   .banner .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .banner .actions button { border: 0; border-radius: 8px; padding: 8px 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--card); color: var(--ink); }
   .banner .actions .primary { background: var(--accent); color: var(--accent-ink); }
@@ -195,6 +223,7 @@
       <div class="days" id="days"></div>
       <p class="deadline">収集日の朝 8:30 までに出してください。</p>
       <div class="week" id="week" aria-label="1週間の予定"></div>
+      <button class="cal-open" id="openCal">1か月のカレンダーを見る</button>
     </section>
 
     <label class="search-label" for="q">捨て方を調べる</label>
@@ -216,6 +245,21 @@
       </section>
     </div>
     <div class="results" id="results"></div>
+  </main>
+
+  <!-- 月のカレンダー -->
+  <main id="calView" hidden>
+    <button class="back" id="closeCal">← 戻る</button>
+    <section class="card">
+      <div class="cal-head">
+        <button class="cal-nav" id="calPrev" aria-label="前の月">‹</button>
+        <h2 id="calTitle"></h2>
+        <button class="cal-nav" id="calNext" aria-label="次の月">›</button>
+      </div>
+      <div class="cal" id="cal"></div>
+      <div class="legend" id="legend"></div>
+      <p class="cal-note">ペットボトルはリサイクルプラと同じ日、有害ごみは資源ごみと同じ日です。大型ごみは予約した場合のみ収集されます。</p>
+    </section>
   </main>
 
   <div class="error" id="error" hidden></div>
@@ -249,10 +293,18 @@
     "資源ごみ": { kind: "s" },
     "有害ごみ": { kind: "s", tip: "資源ごみと同じ日に、袋を分けて「有害」と書いて出してください。" },
     "不燃ごみ": { kind: "f" },
-    "大型ごみ": { kind: "o", tip: "事前の申し込みが必要です。大型ごみ受付センター 0570-082530 / 082-544-5300" },
+    "大型ごみ": { kind: "o", reserve: true },
     "家電リサイクル": { color: "var(--x)", tip: "市では収集しません。購入した店や買い替えをする店にご相談ください。" },
     "市では収集しない": { color: "var(--x)" },
   };
+
+  // 大型ごみの予約（市HP「大型ごみ収集の予約・排出方法」より）
+  const RESERVE_URL = "https://ogatagomi.city.hiroshima.lg.jp/eco/view/hiroshima/top.html";
+  const reserveBox = () => `<div class="reserve">
+    <a class="btn" href="${RESERVE_URL}" target="_blank" rel="noopener">インターネットで予約する（24時間）</a>
+    <p>電話：<a class="tel" href="tel:0570082530">0570-082530</a> または <a class="tel" href="tel:0825445300">082-544-5300</a>（平日 9時〜18時）</p>
+    <p>締め切り：インターネットは収集日の5日前、電話は3日前まで（土日祝を除いて数えます）</p>
+  </div>`;
 
   const WARD_ORDER = ["naka", "higashi", "minami", "nishi", "asaminami", "asakita", "aki", "saeki"];
   const KANA_ROWS = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"];
@@ -301,7 +353,7 @@
 
   async function openSetup(msg) {
     $("setupMsg").innerHTML = typeof msg === "string" ? `<div class="banner">${esc(msg)}</div>` : "";
-    $("main").hidden = true; $("areaBox").hidden = true;
+    $("main").hidden = true; $("areaBox").hidden = true; $("calView").hidden = true;
     $("setup").hidden = false; $("stepWard").hidden = false; $("stepTown").hidden = true;
     window.scrollTo(0, 0);
     try {
@@ -407,7 +459,7 @@
   // temporary: 共有リンクで別の地域を開いたとき（保存している地域は上書きしない）
   async function openMain(area, temporary = false) {
     if (!area) return openSetup();
-    $("setup").hidden = true; $("error").hidden = true;
+    $("setup").hidden = true; $("error").hidden = true; $("calView").hidden = true;
     $("areaBox").hidden = false;
     $("areaName").textContent = `${area.wardName} ${area.town}`;
     try {
@@ -466,7 +518,8 @@
 
     $("kinds").innerHTML = Object.entries(KINDS).map(([key, k]) => {
       const d = nextDate(key);
-      return `<div class="kind-row"><span class="bar" style="background:${k.color}"></span><span class="n">${esc(k.name)}</span>
+      const rsv = key === "o" ? `<a class="rsv" href="${RESERVE_URL}" target="_blank" rel="noopener">予約はこちら</a>` : "";
+      return `<div class="kind-row"><span class="bar" style="background:${k.color}"></span><span class="n">${esc(k.name)}${rsv}</span>
         <span class="d">${d ? `${mdShort(d)}<small>${untilLabel(d)}</small>` : "－"}</span></div>`;
     }).join("");
 
@@ -549,9 +602,11 @@
     let next = "";
     if (k) {
       const d = nextDate(c.kind);
+      // 大型ごみは予約の締め切りがあるので「出せる日」ではなく地区の収集日として示す
+      const label = c.kind === "o" ? "この地区の大型ごみの日" : "次の収集日";
       next = d
-        ? `<div class="next"><span class="t">次の収集日</span><span class="v">${md(d)}</span><span class="in">${untilLabel(d)}</span></div>`
-        : `<div class="next"><span class="t">次の収集日</span><span class="v">データの範囲外です</span></div>`;
+        ? `<div class="next"><span class="t">${label}</span><span class="v">${md(d)}</span><span class="in">${untilLabel(d)}</span></div>`
+        : `<div class="next"><span class="t">${label}</span><span class="v">データの範囲外です</span></div>`;
     }
     return `<div class="result">
       <h3>${esc(it.n)}</h3>
@@ -559,6 +614,7 @@
       ${it.h ? `<p class="how">${esc(it.h)}</p>` : ""}
       ${it.note ? `<p class="note">※ ${esc(it.note.replace(/^※\s*/, ""))}</p>` : ""}
       ${c.tip && !/同じ日/.test(it.h || "") ? `<p class="tip">${esc(c.tip)}</p>` : ""}
+      ${c.reserve ? reserveBox() : ""}
       ${next}
     </div>`;
   }
@@ -588,6 +644,42 @@
     render();
     window.scrollTo({ top: $("searchBox").offsetTop - 12, behavior: "smooth" });
   }
+
+  // ---- 月のカレンダー ----
+  let calMonth = null; // 表示中の月の1日
+  function renderCal() {
+    const { today } = clock();
+    const y = calMonth.getFullYear(), m = calMonth.getMonth();
+    $("calTitle").textContent = `${y}年${m + 1}月`;
+    const first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate();
+    let html = WEEK.map((w, i) => `<div class="h${i === 0 ? " sun" : i === 6 ? " sat" : ""}">${w}</div>`).join("");
+    html += `<div class="c blank"></div>`.repeat(first.getDay());
+    for (let d = 1; d <= days; d++) {
+      const date = new Date(y, m, d);
+      const ks = kindsOn(date);
+      const cls = ["c", date < today && "past", +date === +today && "today", date.getDay() === 0 && "sun", date.getDay() === 6 && "sat"].filter(Boolean).join(" ");
+      const label = ks.map((k) => KINDS[k].name).join("・") || "収集なし";
+      html += `<div class="${cls}" aria-label="${m + 1}月${d}日 ${esc(label)}"><div class="n">${d}</div>
+        <div class="t">${ks.map((k) => `<div style="color:${KINDS[k].color}">${KINDS[k].short}</div>`).join("")}</div></div>`;
+    }
+    $("cal").innerHTML = html;
+    // データのある範囲（年度）だけ移動できる
+    $("calPrev").disabled = new Date(y, m, 0) < S.start;
+    $("calNext").disabled = new Date(y, m + 1, 1) > S.end;
+  }
+  $("legend").innerHTML = Object.values(KINDS).map((k) => `<span><i style="background:${k.color}"></i>${k.short}：${esc(k.name)}</span>`).join("");
+  $("openCal").addEventListener("click", () => {
+    const { today } = clock();
+    calMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    if (calMonth > S.end) calMonth = new Date(S.end.getFullYear(), S.end.getMonth(), 1);
+    if (calMonth < S.start) calMonth = new Date(S.start.getFullYear(), S.start.getMonth(), 1);
+    $("main").hidden = true; $("calView").hidden = false;
+    renderCal();
+    window.scrollTo(0, 0);
+  });
+  $("closeCal").addEventListener("click", () => { $("calView").hidden = true; $("main").hidden = false; window.scrollTo(0, 0); });
+  $("calPrev").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); });
+  $("calNext").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); });
 
   $("banner").addEventListener("click", (e) => {
     if (e.target.id === "keepArea") { store.set(S.area); openMain(S.area); }
