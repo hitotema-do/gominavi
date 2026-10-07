@@ -42,9 +42,15 @@ try:
 
     def reading(text):
         return "".join(w["hira"] for w in _kks.convert(text))
+
+    def romaji(text):
+        return "".join(w["hepburn"] for w in _kks.convert(text))
 except ImportError:  # 読みが無くても漢字・カナ検索は動く
     def reading(text):
         return ""
+
+    def romaji(text):
+        raise SystemExit("町名のURL用IDを作るには pykakasi が必要です: pip install pykakasi")
 
 
 def read_csv(path):
@@ -98,7 +104,13 @@ def build_towns(no, name):
     for row in read_csv(RAW / YEAR_DIR / f"3-{no}{name}町名.csv")[1:]:
         # 「１丁目」と「一丁目」が混在しているので漢数字にそろえる
         n = re.sub(r"(\d)丁目", lambda m: "〇一二三四五六七八九"[int(m.group(1))] + "丁目", clean(row[0]))
-        towns.append({"n": n, "y": clean(row[1]), "g": int(row[2])})
+        y = clean(row[1])
+        # URLに入れる町名のID（例：西白島町 → nishihakushimachou）
+        tid = re.sub(r"[^a-z0-9]+", "-", romaji(y).lower()).strip("-")
+        towns.append({"id": tid, "n": n, "y": y, "g": int(row[2])})
+    ids = [t["id"] for t in towns]
+    dup = {i for i in ids if ids.count(i) > 1}
+    assert not dup, f"{name}: URL用IDが重複 {dup}"
     return towns
 
 

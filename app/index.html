@@ -55,7 +55,7 @@
   [hidden] { display: none !important; }
 
   header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0 14px; }
-  header h1 { font-size: 18px; margin: 0; letter-spacing: .02em; }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: .02em; white-space: nowrap; flex: none; }
   .area { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .area span { font-size: 14px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .link-btn {
@@ -149,6 +149,11 @@
   .kind-row .d { font-weight: 700; text-align: right; }
   .kind-row .d small { display: block; font-weight: 400; font-size: 12px; color: var(--sub); }
 
+  .banner .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .banner .actions button { border: 0; border-radius: 8px; padding: 8px 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--card); color: var(--ink); }
+  .banner .actions .primary { background: var(--accent); color: var(--accent-ink); }
+  .share p { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
+  .share .link-btn { font-size: 15px; padding: 10px 14px; }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
   .error { text-align: center; padding: 40px 8px; color: var(--sub); }
   footer { font-size: 12px; color: var(--sub); margin-top: 28px; line-height: 1.8; }
@@ -169,6 +174,7 @@
   <main id="setup" hidden>
     <div id="stepWard">
       <p class="lead">お住まいの区を<br>選んでください</p>
+      <div id="setupMsg"></div>
       <p class="lead-sub">選んだ地域はこの端末の中だけに保存されます。</p>
       <div class="wards" id="wards"></div>
     </div>
@@ -202,6 +208,11 @@
       <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日">
         <h2>種類ごとの次の収集日</h2>
         <div id="kinds"></div>
+      </section>
+      <section class="card share" aria-label="この地域のリンク">
+        <h2>この地域のリンク</h2>
+        <p>ご家族や町内の方に送ると、開いた人もすぐにこの地域の収集日を見られます。</p>
+        <button class="link-btn" id="share">リンクを送る</button>
       </section>
     </div>
     <div class="results" id="results"></div>
@@ -273,7 +284,22 @@
   let wardsCache = null;
   const loadWards = () => wardsCache || (wardsCache = getJSON("data/wards.json"));
 
-  async function openSetup() {
+  // URLの ?area=区コード-町名ID（例：naka-nishihakushimachou）
+  const areaKey = (a) => `${a.ward}-${a.id}`;
+  const areaUrl = (a) => `${location.origin}${location.pathname}?area=${areaKey(a)}`;
+  const setUrl = (a) => { try { history.replaceState(null, "", a ? `?area=${areaKey(a)}` : location.pathname); } catch {} };
+
+  async function findArea(key) {
+    const i = key.indexOf("-");
+    if (i < 0) return null;
+    const { wards } = await loadWards();
+    const ward = wards.find((w) => w.code === key.slice(0, i));
+    const t = ward && ward.towns.find((x) => x.id === key.slice(i + 1));
+    return t ? { ward: ward.code, wardName: ward.name, town: t.n, id: t.id, group: t.g } : null;
+  }
+
+  async function openSetup(msg) {
+    $("setupMsg").innerHTML = typeof msg === "string" ? `<div class="banner">${esc(msg)}</div>` : "";
     $("main").hidden = true; $("areaBox").hidden = true;
     $("setup").hidden = false; $("stepWard").hidden = false; $("stepTown").hidden = true;
     window.scrollTo(0, 0);
@@ -319,8 +345,10 @@
       const b = e.target.closest("[data-town]");
       if (!b) return;
       const t = ward.towns.find((x) => x.n === b.dataset.town);
-      store.set({ ward: code, wardName: ward.name, town: t.n, group: t.g });
-      openMain();
+      const area = { ward: code, wardName: ward.name, town: t.n, id: t.id, group: t.g };
+      store.set(area);
+      setUrl(area);
+      openMain(area);
     };
     render();
     window.scrollTo(0, 0);
@@ -330,8 +358,8 @@
     const b = e.target.closest("[data-ward]");
     if (b) openTowns(b.dataset.ward);
   });
-  $("backWard").addEventListener("click", openSetup);
-  $("changeArea").addEventListener("click", openSetup);
+  $("backWard").addEventListener("click", () => openSetup());
+  $("changeArea").addEventListener("click", () => openSetup());
 
   // ---- 日付 ----
   const DAY = 86400000;
@@ -375,8 +403,8 @@
     return n === 0 ? "今日" : n === 1 ? "明日" : n === 2 ? "あさって" : `${n}日後`;
   }
 
-  async function openMain() {
-    const area = store.get();
+  // temporary: 共有リンクで別の地域を開いたとき（保存している地域は上書きしない）
+  async function openMain(area, temporary = false) {
     if (!area) return openSetup();
     $("setup").hidden = true; $("error").hidden = true;
     $("areaBox").hidden = false;
@@ -385,7 +413,7 @@
       const [wardData, items] = await Promise.all([getJSON(`data/${area.ward}.json`), S?.items || getJSON("data/items.json")]);
       const sched = wardData.groups[area.group];
       if (!sched) return openSetup(); // 年度替わりでグループが無くなった場合は選び直し
-      S = { area, sched, oSet: new Set(sched.o), start: fromYmd(wardData.start), end: fromYmd(wardData.end), items };
+      S = { area, temporary, sched, oSet: new Set(sched.o), start: fromYmd(wardData.start), end: fromYmd(wardData.end), items };
       $("range").textContent = `（${wardData.start.replace(/-/g, "/")}〜${wardData.end.replace(/-/g, "/")}）`;
     } catch { return showError("データを読み込めませんでした。通信環境を確認して、もう一度開いてください。"); }
     buildIndex();
@@ -398,9 +426,15 @@
 
   function renderTop() {
     const { today, pastDeadline } = clock();
-    $("banner").innerHTML = today > S.end
+    const mine = store.get();
+    $("banner").innerHTML = (S.temporary && mine
+      ? `<div class="banner">リンクで送られた地域（${esc(S.area.wardName)} ${esc(S.area.town)}）を表示しています。
+          <div class="actions"><button class="primary" id="keepArea">この地域を保存する</button>
+          <button id="backMine">${esc(mine.town)}に戻る</button></div></div>`
+      : "")
+      + (today > S.end
       ? `<div class="banner">収集日データの期限が切れています。新しい年度のデータに更新されるまで、市のホームページでご確認ください。</div>`
-      : "";
+      : "");
 
     const day = (label, d) => {
       const ks = kindsOn(d);
@@ -554,6 +588,26 @@
     window.scrollTo({ top: $("searchBox").offsetTop - 12, behavior: "smooth" });
   }
 
+  $("banner").addEventListener("click", (e) => {
+    if (e.target.id === "keepArea") { store.set(S.area); openMain(S.area); }
+    if (e.target.id === "backMine") { const mine = store.get(); setUrl(mine); openMain(mine); }
+  });
+
+  $("share").addEventListener("click", async () => {
+    const url = areaUrl(S.area);
+    const title = `広島市ゴミナビ（${S.area.wardName} ${S.area.town}）`;
+    if (navigator.share) {
+      try { await navigator.share({ title, text: `${S.area.town}のごみ収集日`, url }); } catch {}
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      $("share").textContent = "リンクをコピーしました";
+    } catch {
+      window.prompt("このリンクをコピーしてください", url);
+    }
+  });
+
   $("q").addEventListener("input", render);
   $("clear").addEventListener("click", () => { $("q").value = ""; render(); $("q").focus(); });
   $("main").addEventListener("click", (e) => {
@@ -566,7 +620,23 @@
 
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
-  store.get() ? openMain() : openSetup();
+  async function start() {
+    const saved = store.get();
+    const key = new URLSearchParams(location.search).get("area");
+    if (key && !(saved && saved.id && areaKey(saved) === key)) {
+      let linked = null;
+      try { linked = await findArea(key); } catch {}
+      if (!linked) {
+        setUrl(saved && saved.id ? saved : null);
+        return saved ? openMain(saved) : openSetup("リンクの地域が見つかりませんでした。お手数ですが地域を選んでください。");
+      }
+      if (!saved) { store.set(linked); return openMain(linked); }
+      return openMain(linked, true);
+    }
+    if (saved && saved.id) setUrl(saved);
+    saved ? openMain(saved) : openSetup();
+  }
+  start();
 })();
 </script>
 </body>
