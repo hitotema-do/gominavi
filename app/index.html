@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>広島市ゴミナビ</title>
+<meta name="description" content="広島市のごみ収集日と分別方法をすぐに調べられる非公式アプリ。全8区対応。">
+<meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14171C" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ゴミナビ">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F7F9;
+    --card: #FFFFFF;
+    --ink: #1C2128;
+    --sub: #5F6B7A;
+    --line: #E2E6EB;
+    --soft: #EEF1F4;
+    --accent: #0B6E6E;
+    --accent-ink: #FFFFFF;
+    --warn-bg: #FFF4D6;
+    --warn-ink: #6B4E00;
+    /* ごみの種類ごとの色（必ず文字と一緒に使う） */
+    --k: #C4421A; --r: #1F6FB2; --p: #6B4FA8; --f: #4F5D6B; --s: #2C7A3F; --o: #8A5A1E; --x: #A33A3A;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171C; --card: #1E232A; --ink: #E8ECF0; --sub: #9AA5B1; --line: #2E353E; --soft: #262C34;
+      --accent: #4FC1B8; --accent-ink: #0B1F1E; --warn-bg: #3A3220; --warn-ink: #F2D58A;
+      --k: #FF8A65; --r: #64B5F6; --p: #B39DDB; --f: #B0BEC5; --s: #81C784; --o: #D7A86E; --x: #EF9A9A;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 12px 16px 48px; }
+  [hidden] { display: none !important; }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0 14px; }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: .02em; }
+  .area { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .area span { font-size: 14px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .link-btn {
+    border: 1px solid var(--line); background: var(--card); border-radius: 8px;
+    padding: 6px 10px; font-size: 13px; cursor: pointer; white-space: nowrap; flex: none;
+  }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  h2 { font-size: 15px; margin: 0 0 10px; color: var(--sub); font-weight: 700; }
+
+  /* ---- 地域の選択 ---- */
+  .lead { font-size: 22px; font-weight: 700; margin: 8px 0 4px; line-height: 1.4; }
+  .lead-sub { color: var(--sub); margin: 0 0 18px; font-size: 14px; }
+  .wards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ward {
+    border: 1px solid var(--line); background: var(--card); border-radius: 12px;
+    padding: 18px 12px; font-size: 18px; font-weight: 700; cursor: pointer; text-align: center;
+  }
+  .ward:active, .town:active { background: var(--soft); }
+  .back { border: 0; background: none; color: var(--accent); font-weight: 700; padding: 6px 0; cursor: pointer; font-size: 15px; }
+  .towns { margin-top: 12px; }
+  .kana { font-size: 13px; font-weight: 700; color: var(--sub); padding: 14px 4px 6px; position: sticky; top: 0; background: var(--bg); }
+  .town {
+    display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line);
+    background: var(--card); padding: 14px 16px; font-size: 17px; cursor: pointer;
+  }
+  .town small { display: block; color: var(--sub); font-size: 12px; }
+  .town-group { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .town-group .town:last-child { border-bottom: 0; }
+
+  /* ---- 今日・明日 ---- */
+  .days { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .day { border-radius: 12px; padding: 12px 14px; background: var(--soft); min-height: 112px; border-left: 6px solid transparent; }
+  .day .label { font-size: 14px; color: var(--sub); font-weight: 700; }
+  .day .date { font-size: 15px; margin-bottom: 6px; }
+  .day .kind { font-size: 21px; font-weight: 700; line-height: 1.3; }
+  .day .kind + .kind { font-size: 16px; margin-top: 4px; }
+  .day .none { font-size: 18px; color: var(--sub); }
+  .deadline { font-size: 13px; color: var(--sub); margin: 10px 2px 0; }
+
+  /* 週間 */
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 14px; }
+  .wd { text-align: center; border-radius: 8px; padding: 6px 0; background: var(--soft); min-width: 0; }
+  .wd .w { font-size: 11px; color: var(--sub); }
+  .wd .d { font-size: 15px; font-weight: 700; }
+  .wd .t { font-size: 10.5px; font-weight: 700; line-height: 1.3; min-height: 14px; white-space: nowrap; overflow: hidden; }
+  .wd.sun .w { color: var(--k); } .wd.sat .w { color: var(--r); }
+  .wd.today { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  /* ---- 検索 ---- */
+  .search { position: relative; margin: 6px 0 0; }
+  .search input {
+    width: 100%; font: inherit; font-size: 18px; color: var(--ink);
+    padding: 14px 44px 14px 16px; border-radius: 12px; border: 2px solid var(--line);
+    background: var(--card); outline: none; -webkit-appearance: none;
+  }
+  .search input:focus { border-color: var(--accent); }
+  .search input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+  .search input::placeholder { color: var(--sub); }
+  .search .clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    border: 0; background: var(--soft); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: none;
+  }
+  .search.filled .clear { display: block; }
+  .search-label { display: block; font-weight: 700; margin: 4px 2px 8px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 14px; cursor: pointer; }
+
+  .results { margin-top: 14px; }
+  .result { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .result h3 { margin: 0 0 8px; font-size: 17px; }
+  .tag { display: inline-block; font-weight: 700; font-size: 15px; padding: 3px 10px; border-radius: 6px; color: #fff; }
+  @media (prefers-color-scheme: dark) { .tag { color: #111; } }
+  .how { margin: 10px 0 0; }
+  .note { font-size: 14px; color: var(--sub); margin: 6px 0 0; }
+  .tip { font-size: 14px; margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--warn-bg); color: var(--warn-ink); }
+  .next { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .next .t { font-size: 13px; color: var(--sub); }
+  .next .v { font-size: 18px; font-weight: 700; }
+  .next .in { font-size: 13px; color: var(--sub); }
+  .ref { border: 0; background: none; color: var(--accent); font-weight: 700; padding: 0; cursor: pointer; text-decoration: underline; }
+  .empty { text-align: center; color: var(--sub); padding: 24px 8px; }
+  .more { text-align: center; font-size: 13px; color: var(--sub); }
+
+  /* 種類別 */
+  .kind-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .kind-row:first-of-type { border-top: 0; padding-top: 0; }
+  .kind-row .bar { width: 6px; align-self: stretch; border-radius: 3px; flex: none; }
+  .kind-row .n { flex: 1; font-size: 15px; }
+  .kind-row .d { font-weight: 700; text-align: right; }
+  .kind-row .d small { display: block; font-weight: 400; font-size: 12px; color: var(--sub); }
+
+  .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
+  .error { text-align: center; padding: 40px 8px; color: var(--sub); }
+  footer { font-size: 12px; color: var(--sub); margin-top: 28px; line-height: 1.8; }
+  footer a { color: var(--sub); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>広島市ゴミナビ</h1>
+    <div class="area" id="areaBox" hidden>
+      <span id="areaName"></span>
+      <button class="link-btn" id="changeArea">地域を変更</button>
+    </div>
+  </header>
+
+  <!-- 地域の選択 -->
+  <main id="setup" hidden>
+    <div id="stepWard">
+      <p class="lead">お住まいの区を<br>選んでください</p>
+      <p class="lead-sub">選んだ地域はこの端末の中だけに保存されます。</p>
+      <div class="wards" id="wards"></div>
+    </div>
+    <div id="stepTown" hidden>
+      <button class="back" id="backWard">← 区を選び直す</button>
+      <p class="lead"><span id="wardTitle"></span>の町名を<br>選んでください</p>
+      <div class="search">
+        <input id="townQ" type="search" placeholder="町名で絞り込み（ひらがなでもOK）" autocomplete="off" aria-label="町名で絞り込み">
+      </div>
+      <div class="towns" id="towns"></div>
+    </div>
+  </main>
+
+  <!-- メイン -->
+  <main id="main" hidden>
+    <div id="banner"></div>
+    <section class="card" aria-label="収集日">
+      <div class="days" id="days"></div>
+      <p class="deadline">収集日の朝 8:30 までに出してください。</p>
+      <div class="week" id="week" aria-label="1週間の予定"></div>
+    </section>
+
+    <label class="search-label" for="q">捨て方を調べる</label>
+    <div class="search" id="searchBox">
+      <input id="q" type="search" placeholder="品目を入力（例：傘、電池）" autocomplete="off" enterkeyhint="search">
+      <button class="clear" id="clear" aria-label="入力を消す">×</button>
+    </div>
+
+    <div id="home">
+      <div class="chips" id="chips"></div>
+      <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日">
+        <h2>種類ごとの次の収集日</h2>
+        <div id="kinds"></div>
+      </section>
+    </div>
+    <div class="results" id="results"></div>
+  </main>
+
+  <div class="error" id="error" hidden></div>
+
+  <footer>
+    このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。<br>
+    データ出典：<a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">広島市 家庭ごみ収集・分別情報（オープンデータ）</a><span id="range"></span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  // ---- 定義 ----
+  // 収集日データの1文字コード → 表示
+  const KINDS = {
+    k: { name: "可燃ごみ", short: "可燃", color: "var(--k)" },
+    r: { name: "リサイクルプラ・ペットボトル", short: "リプラ", color: "var(--r)" },
+    p: { name: "その他プラ", short: "他プラ", color: "var(--p)" },
+    s: { name: "資源ごみ・有害ごみ", short: "資源", color: "var(--s)" },
+    f: { name: "不燃ごみ", short: "不燃", color: "var(--f)" },
+    o: { name: "大型ごみ（要予約）", short: "大型", color: "var(--o)" },
+  };
+
+  // 分別事典の分別区分 → 収集日の種類と補足
+  const CATS = {
+    "可燃ごみ": { kind: "k" },
+    "リサイクルプラ": { kind: "r" },
+    "ペットボトル": { kind: "r", tip: "リサイクルプラと同じ日に、袋を分けて出してください。" },
+    "その他プラ": { kind: "p" },
+    "資源ごみ": { kind: "s" },
+    "有害ごみ": { kind: "s", tip: "資源ごみと同じ日に、袋を分けて「有害」と書いて出してください。" },
+    "不燃ごみ": { kind: "f" },
+    "大型ごみ": { kind: "o", tip: "事前の申し込みが必要です。大型ごみ受付センター 0570-082530 / 082-544-5300" },
+    "家電リサイクル": { color: "var(--x)", tip: "市では収集しません。購入した店や買い替えをする店にご相談ください。" },
+    "市では収集しない": { color: "var(--x)" },
+  };
+
+  const WARD_ORDER = ["naka", "higashi", "minami", "nishi", "asaminami", "asakita", "aki", "saeki"];
+  const KANA_ROWS = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"];
+  const WEEK = ["日", "月", "火", "水", "木", "金", "土"];
+  const DEADLINE = { h: 8, m: 30 };
+  const POPULAR = ["電池", "傘", "スプレー缶", "フライパン", "ペットボトル", "靴", "かばん", "ふとん", "蛍光灯", "本"];
+  const STORE_KEY = "gominavi.area";
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const getJSON = (path) => fetch(path).then((r) => { if (!r.ok) throw new Error(path); return r.json(); });
+
+  const store = {
+    get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch { return null; } },
+    set(v) { try { localStorage.setItem(STORE_KEY, JSON.stringify(v)); } catch {} },
+  };
+
+  // 検索用の正規化（カタカナ→ひらがな、全角→半角、記号除去）
+  const norm = (s) => (s || "").normalize("NFKC").toLowerCase()
+    .replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+    .replace(/[\s()（）・、,.。]/g, "");
+
+  function showError(msg) {
+    $("setup").hidden = true; $("main").hidden = true;
+    $("error").hidden = false;
+    $("error").textContent = msg;
+  }
+
+  // ---- 地域の選択 ----
+  let wardsCache = null;
+  const loadWards = () => wardsCache || (wardsCache = getJSON("data/wards.json"));
+
+  async function openSetup() {
+    $("main").hidden = true; $("areaBox").hidden = true;
+    $("setup").hidden = false; $("stepWard").hidden = false; $("stepTown").hidden = true;
+    window.scrollTo(0, 0);
+    try {
+      const { wards } = await loadWards();
+      const byCode = Object.fromEntries(wards.map((w) => [w.code, w]));
+      $("wards").innerHTML = WARD_ORDER.filter((c) => byCode[c])
+        .map((c) => `<button class="ward" data-ward="${c}">${esc(byCode[c].name)}</button>`).join("");
+    } catch { showError("データを読み込めませんでした。通信環境を確認して、もう一度開いてください。"); }
+  }
+
+  async function openTowns(code) {
+    const { wards } = await loadWards();
+    const ward = wards.find((w) => w.code === code);
+    $("stepWard").hidden = true; $("stepTown").hidden = false;
+    $("wardTitle").textContent = ward.name;
+    $("townQ").value = "";
+    const render = () => {
+      const q = norm($("townQ").value);
+      const list = ward.towns.filter((t) => !q || norm(t.n).includes(q) || norm(t.y).includes(q));
+      if (!list.length) { $("towns").innerHTML = `<p class="empty">見つかりませんでした</p>`; return; }
+      // 読みの頭文字で「あ行・か行…」に分ける
+      const rowOf = (y) => {
+        const c = norm(y)[0] || "";
+        let row = "他";
+        for (const r of KANA_ROWS) if (c >= r) row = r;
+        return /[ぁ-ゖ]/.test(c) ? row : "他";
+      };
+      let html = "", cur = null;
+      for (const t of list) {
+        const row = rowOf(t.y);
+        if (row !== cur) {
+          if (cur !== null) html += "</div>";
+          html += `<div class="kana">${row === "他" ? "その他" : row + "行"}</div><div class="town-group">`;
+          cur = row;
+        }
+        html += `<button class="town" data-town="${esc(t.n)}">${esc(t.n)}</button>`;
+      }
+      $("towns").innerHTML = html + "</div>";
+    };
+    $("townQ").oninput = render;
+    $("towns").onclick = (e) => {
+      const b = e.target.closest("[data-town]");
+      if (!b) return;
+      const t = ward.towns.find((x) => x.n === b.dataset.town);
+      store.set({ ward: code, wardName: ward.name, town: t.n, group: t.g });
+      openMain();
+    };
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  $("wards").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ward]");
+    if (b) openTowns(b.dataset.ward);
+  });
+  $("backWard").addEventListener("click", openSetup);
+  $("changeArea").addEventListener("click", openSetup);
+
+  // ---- 日付 ----
+  const DAY = 86400000;
+  const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const fromYmd = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const md = (d) => `${d.getMonth() + 1}月${d.getDate()}日（${WEEK[d.getDay()]}）`;
+  const mdShort = (d) => `${d.getMonth() + 1}/${d.getDate()}（${WEEK[d.getDay()]}）`;
+
+  // ---- メイン ----
+  let S = null; // { area, sched, start, end, items }
+
+  // その日に出せる種類（コードの配列）
+  function kindsOn(d) {
+    const i = Math.round((d - S.start) / DAY);
+    if (i < 0 || i >= S.sched.d.length) return [];
+    const out = [];
+    if (S.sched.d[i] !== "-") out.push(S.sched.d[i]);
+    if (S.oSet.has(i)) out.push("o");
+    return out;
+  }
+
+  function clock() {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const pastDeadline = now.getHours() * 60 + now.getMinutes() >= DEADLINE.h * 60 + DEADLINE.m;
+    return { today, pastDeadline };
+  }
+
+  // 次にその種類を出せる日（今日の締切を過ぎていれば今日は除く）
+  function nextDate(kind) {
+    const { today, pastDeadline } = clock();
+    for (let d = pastDeadline ? addDays(today, 1) : today; d <= S.end; d = addDays(d, 1)) {
+      if (kindsOn(d).includes(kind)) return d;
+    }
+    return null;
+  }
+
+  function untilLabel(d) {
+    const n = Math.round((d - clock().today) / DAY);
+    return n === 0 ? "今日" : n === 1 ? "明日" : n === 2 ? "あさって" : `${n}日後`;
+  }
+
+  async function openMain() {
+    const area = store.get();
+    if (!area) return openSetup();
+    $("setup").hidden = true; $("error").hidden = true;
+    $("areaBox").hidden = false;
+    $("areaName").textContent = `${area.wardName} ${area.town}`;
+    try {
+      const [wardData, items] = await Promise.all([getJSON(`data/${area.ward}.json`), S?.items || getJSON("data/items.json")]);
+      const sched = wardData.groups[area.group];
+      if (!sched) return openSetup(); // 年度替わりでグループが無くなった場合は選び直し
+      S = { area, sched, oSet: new Set(sched.o), start: fromYmd(wardData.start), end: fromYmd(wardData.end), items };
+      $("range").textContent = `（${wardData.start.replace(/-/g, "/")}〜${wardData.end.replace(/-/g, "/")}）`;
+    } catch { return showError("データを読み込めませんでした。通信環境を確認して、もう一度開いてください。"); }
+    buildIndex();
+    $("main").hidden = false;
+    $("q").value = "";
+    renderTop();
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function renderTop() {
+    const { today, pastDeadline } = clock();
+    $("banner").innerHTML = today > S.end
+      ? `<div class="banner">収集日データの期限が切れています。新しい年度のデータに更新されるまで、市のホームページでご確認ください。</div>`
+      : "";
+
+    const day = (label, d) => {
+      const ks = kindsOn(d);
+      if (!ks.length) {
+        return `<div class="day"><div class="label">${label}</div><div class="date">${md(d)}</div><div class="none">収集なし</div></div>`;
+      }
+      return `<div class="day" style="border-left-color:${KINDS[ks[0]].color}">
+        <div class="label">${label}</div><div class="date">${md(d)}</div>
+        ${ks.map((k) => `<div class="kind" style="color:${KINDS[k].color}">${esc(KINDS[k].name)}</div>`).join("")}
+      </div>`;
+    };
+    // 8:30を過ぎたら今日の分は出せないので、明日・あさってを表示（前の晩に見る想定）
+    $("days").innerHTML = pastDeadline
+      ? day("明日", addDays(today, 1)) + day("あさって", addDays(today, 2))
+      : day("今日", today) + day("明日", addDays(today, 1));
+
+    let w = "";
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(today, i);
+      const ks = kindsOn(d);
+      const cls = ["wd", i === 0 && "today", d.getDay() === 0 && "sun", d.getDay() === 6 && "sat"].filter(Boolean).join(" ");
+      const label = ks.map((k) => KINDS[k].name).join("・") || "収集なし";
+      w += `<div class="${cls}" aria-label="${md(d)} ${esc(label)}"><div class="w">${WEEK[d.getDay()]}</div>
+        <div class="d">${d.getDate()}</div>
+        <div class="t">${ks.map((k) => `<div style="color:${KINDS[k].color}">${KINDS[k].short}</div>`).join("") || "<span style='color:var(--sub)'>－</span>"}</div></div>`;
+    }
+    $("week").innerHTML = w;
+
+    $("kinds").innerHTML = Object.entries(KINDS).map(([key, k]) => {
+      const d = nextDate(key);
+      return `<div class="kind-row"><span class="bar" style="background:${k.color}"></span><span class="n">${esc(k.name)}</span>
+        <span class="d">${d ? `${mdShort(d)}<small>${untilLabel(d)}</small>` : "－"}</span></div>`;
+    }).join("");
+
+    $("chips").innerHTML = POPULAR.map((p) => `<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join("");
+  }
+
+  // ---- 品目検索 ----
+  // 市のデータと呼び方が違うもの（入力した言葉 → データ上の名前）
+  const ALIASES = [
+    ["蛍光灯", "蛍光管"], ["けいこうとう", "けいこうかん"],
+    ["段ボール", "ダンボール"],
+    ["スニーカー", "靴"], ["ブーツ", "靴"], ["パンプス", "靴"], ["くつ下", "くつした"], ["靴下", "くつした"],
+    ["書籍", "本"], ["文庫", "本"], ["教科書", "本"], ["絵本", "本"], ["漫画", "本"], ["まんが", "本"], ["マンガ", "本"],
+    ["電灯", "電球"], ["でんとう", "でんきゅう"],
+    // キャップ単体の品目は無く、ペットボトルの備考に書かれている
+    ["ペットボトルのふた", "ペットボトル"], ["ペットボトルのキャップ", "ペットボトル"],
+  ].map(([from, to]) => [norm(from), to]);
+
+  // 「靴(運動靴・…)」のような括弧前の部分を見出し語として優先する
+  const head = (s) => norm((s || "").split(/[(（]/)[0]);
+  let index = [];
+  function buildIndex() {
+    if (index.length) return;
+    index = S.items.map((it) => ({
+      it,
+      name: norm(it.n),
+      heads: [head(it.n), head(it.y)],
+      key: norm(it.n) + "|" + norm(it.y || ""),
+    }));
+  }
+
+  // 言い換えも含めて検索（元の言葉のヒットが先）
+  function search(q) {
+    const seen = new Set();
+    const out = [];
+    const add = (list) => list.forEach((it) => { if (!seen.has(it)) { seen.add(it); out.push(it); } });
+    const nq = norm(q);
+    add(searchExact(nq));
+    for (const [from, to] of ALIASES) {
+      if (from.length >= 2 && nq.includes(from)) add(searchExact(norm(nq.replace(from, norm(to)))));
+    }
+    return out;
+  }
+
+  // 見つからないとき、語尾を削って近いものを探す（「蛍光灯」→「蛍光」）
+  function suggest(q) {
+    const nq = norm(q);
+    for (let n = nq.length - 1; n >= 2; n--) {
+      const hits = search(nq.slice(0, n));
+      if (hits.length) return hits;
+    }
+    return [];
+  }
+
+  function searchExact(nq) {
+    if (!nq) return [];
+    const hits = [];
+    for (const x of index) {
+      const pos = x.key.indexOf(nq);
+      if (pos < 0) continue;
+      // 見出し語一致 → 先頭一致 → 部分一致、同順位なら名前が短い順
+      const score = x.heads.includes(nq) ? 0
+        : x.heads.some((h) => h.startsWith(nq)) || x.key.split("|")[1].startsWith(nq) ? 1 : 2;
+      hits.push({ x, score });
+    }
+    // 見出し語一致どうしは事典の順（よく使う方が先）、それ以外は短い名前を優先
+    hits.sort((a, b) => a.score - b.score || (a.score && a.x.name.length - b.x.name.length));
+    return hits.map((h) => h.x.it);
+  }
+
+  function itemCard(it) {
+    if (it.ref) {
+      return `<div class="result"><h3>${esc(it.n)}</h3>
+        <p class="how"><button class="ref" data-q="${esc(it.ref)}">「${esc(it.ref)}」</button>の項目をご覧ください。</p></div>`;
+    }
+    const c = CATS[it.c] || {};
+    const k = c.kind ? KINDS[c.kind] : null;
+    const color = c.color || (k && k.color) || "var(--f)";
+
+    let next = "";
+    if (k) {
+      const d = nextDate(c.kind);
+      next = d
+        ? `<div class="next"><span class="t">次の収集日</span><span class="v">${md(d)}</span><span class="in">${untilLabel(d)}</span></div>`
+        : `<div class="next"><span class="t">次の収集日</span><span class="v">データの範囲外です</span></div>`;
+    }
+    return `<div class="result">
+      <h3>${esc(it.n)}</h3>
+      <span class="tag" style="background:${color}">${esc(it.c)}</span>
+      ${it.h ? `<p class="how">${esc(it.h)}</p>` : ""}
+      ${it.note ? `<p class="note">※ ${esc(it.note.replace(/^※\s*/, ""))}</p>` : ""}
+      ${c.tip && !/同じ日/.test(it.h || "") ? `<p class="tip">${esc(c.tip)}</p>` : ""}
+      ${next}
+    </div>`;
+  }
+
+  const LIMIT = 30;
+  function render() {
+    const q = $("q").value;
+    $("searchBox").classList.toggle("filled", q.length > 0);
+    $("home").hidden = !!q.trim();
+    if (!q.trim()) { $("results").innerHTML = ""; return; }
+
+    const hits = search(q);
+    if (!hits.length) {
+      const near = suggest(q).slice(0, 8);
+      $("results").innerHTML = `<div class="empty">「${esc(q)}」は見つかりませんでした。<br>
+        <small>${near.length ? "近い品目：" : "別の言い方や、素材（プラスチック、金属など）でもお試しください。"}</small>
+        ${near.length ? `<div class="chips" style="justify-content:center">${near.map((it) =>
+          `<button class="chip" data-q="${esc(it.n)}">${esc(it.n)}</button>`).join("")}</div>` : ""}</div>`;
+      return;
+    }
+    $("results").innerHTML = hits.slice(0, LIMIT).map(itemCard).join("")
+      + (hits.length > LIMIT ? `<p class="more">ほか ${hits.length - LIMIT} 件あります。もう少し詳しく入力してください。</p>` : "");
+  }
+
+  function setQuery(q) {
+    $("q").value = q;
+    render();
+    window.scrollTo({ top: $("searchBox").offsetTop - 12, behavior: "smooth" });
+  }
+
+  $("q").addEventListener("input", render);
+  $("clear").addEventListener("click", () => { $("q").value = ""; render(); $("q").focus(); });
+  $("main").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-q]");
+    if (b) setQuery(b.dataset.q);
+  });
+
+  // 開きっぱなしで日付や8:30をまたいだときに表示を更新
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && S && !$("main").hidden) renderTop(); });
+
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+  store.get() ? openMain() : openSetup();
+})();
+</script>
+</body>
+</html>
