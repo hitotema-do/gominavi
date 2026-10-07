@@ -105,7 +105,7 @@ def build_towns(no, name):
         # 「１丁目」と「一丁目」が混在しているので漢数字にそろえる
         n = re.sub(r"(\d)丁目", lambda m: "〇一二三四五六七八九"[int(m.group(1))] + "丁目", clean(row[0]))
         y = clean(row[1])
-        # URLに入れる町名のID（例：西白島町 → nishihakushimachou）
+        # URLに入れる町名のID（例：紙屋町一丁目 → kamiyachou1choume）
         tid = re.sub(r"[^a-z0-9]+", "-", romaji(y).lower()).strip("-")
         towns.append({"id": tid, "n": n, "y": y, "g": int(row[2])})
     ids = [t["id"] for t in towns]
