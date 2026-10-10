@@ -17,4 +17,5 @@
 
 - ペットボトルはリサイクルプラと同じ日、有害ごみは資源ごみと同じ日（収集日程表CSVには載っていないため、アプリ側で対応付けている）
 - 選んだ地域は端末の localStorage にだけ保存する
+- LINEなどで送ったときのカード画像（app/og.png）は `python scripts/make_og_image.py` で作り直せる
 - ローカル確認：`python -m http.server 8766 --directory app`
