@@ -389,7 +389,7 @@
   let wardsCache = null;
   const loadWards = () => wardsCache || (wardsCache = getJSON("data/wards.json"));
 
-  // URLの ?area=区コード-町名ID（例：naka-nishihakushimachou）
+  // URLの ?area=区コード-町名ID（例：naka-kamiyachou1choume）
   const areaKey = (a) => `${a.ward}-${a.id}`;
   const areaUrl = (a) => `${location.origin}${location.pathname}?area=${areaKey(a)}`;
   const setUrl = (a) => { try { history.replaceState(null, "", a ? `?area=${areaKey(a)}` : location.pathname); } catch {} };
