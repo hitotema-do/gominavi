@@ -180,6 +180,12 @@
   .banner .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .banner .actions button { border: 0; border-radius: 8px; padding: 8px 12px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--card); color: var(--ink); }
   .banner .actions .primary { background: var(--accent); color: var(--accent-ink); }
+  .help .office { margin: 0 0 12px; font-size: 15px; }
+  .help .office .tel { color: var(--ink); font-weight: 700; }
+  .help .office small { color: var(--sub); }
+  .help .tips { margin: 0; padding-left: 1.2em; font-size: 14px; display: grid; gap: 6px; }
+  .help .more-link { margin: 12px 0 0; font-size: 14px; }
+  .help .more-link a { color: var(--accent); font-weight: 700; }
   .share p { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
   .share .link-btn { font-size: 15px; padding: 10px 14px; }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
@@ -238,6 +244,18 @@
         <h2>種類ごとの次の収集日</h2>
         <div id="kinds"></div>
       </section>
+      <section class="card help" aria-label="困ったときは">
+        <h2>困ったときは</h2>
+        <div id="office"></div>
+        <ul class="tips">
+          <li><strong>出す場所</strong>：一戸建ては近くのごみ集積所（場所は近所の方へ）、マンション・アパートは建物のごみ置き場（家主・管理会社へ）。</li>
+          <li><strong>引っ越しなどで大量に出るごみ</strong>は収集しません。自分で市の処理施設に持ち込むか、市の許可業者に頼んでください。</li>
+          <li><strong>小型家電</strong>（縦15×横30×奥行40cmの投入口に入るもの）は、区役所1階などの回収ボックスにも入れられます。</li>
+          <li><strong>充電式電池・モバイルバッテリー</strong>は、区役所の充電式電池回収ボックスにも入れられます（破損・膨張していないもの）。</li>
+          <li><strong>紙パック</strong>は、できるだけスーパーなどの店頭回収へ。難しい場合は可燃ごみです。</li>
+        </ul>
+        <p class="more-link"><a href="https://www.city.hiroshima.lg.jp/faq/gomi-kankyo/index.html" target="_blank" rel="noopener">市の「よくある質問と回答」を見る</a></p>
+      </section>
       <section class="card share" aria-label="この地域のリンク">
         <h2>この地域のリンク</h2>
         <p>ご家族や町内の方に送ると、開いた人もすぐにこの地域の収集日を見られます。</p>
@@ -294,7 +312,7 @@
     "有害ごみ": { kind: "s", tip: "資源ごみと同じ日に、袋を分けて「有害」と書いて出してください。" },
     "不燃ごみ": { kind: "f" },
     "大型ごみ": { kind: "o", reserve: true },
-    "家電リサイクル": { color: "var(--x)", tip: "市では収集しません。購入した店や買い替えをする店にご相談ください。" },
+    "家電リサイクル": { color: "var(--x)", kaden: true },
     "市では収集しない": { color: "var(--x)" },
   };
 
@@ -304,13 +322,33 @@
     <a class="btn" href="${RESERVE_URL}" target="_blank" rel="noopener">インターネットで予約する（24時間）</a>
     <p>電話：<a class="tel" href="tel:0570082530">0570-082530</a> または <a class="tel" href="tel:0825445300">082-544-5300</a>（平日 9時〜18時）</p>
     <p>締め切り：インターネットは収集日の5日前、電話は3日前まで（土日祝を除いて数えます）</p>
+    <p>自分で持ち込む場合は処分無料：安佐南工場 大型ごみ破砕処理施設（安佐南区伴北四丁目3990／082-848-1114）。土日祝・年末年始・8月6日は休み。</p>
   </div>`;
+
+  // 家電リサイクル法の対象機器（市HP「よくある質問と回答」より）
+  const kadenBox = () => `<div class="reserve">
+    <p><strong>処分のしかたは3通りあります。</strong></p>
+    <p>1. 買い替える店、または購入した店に引き取ってもらう</p>
+    <p>2. 郵便局で家電リサイクル券を買ってリサイクル料金を払い、自分で指定の場所に持ち込む（予約不要）<br>
+      ・岡山県貨物運送 広島主管支店（西区観音新町四丁目10-202／082-297-2411）<br>
+      ・西濃運輸 広島支店（中区光南六丁目2-15／082-545-9071）</p>
+    <p>3. 市に収集を頼む（リサイクル料金のほかに、収集運搬手数料が1台3,000円。大型ごみ受付センター 0570-082530 に申し込み）</p>
+    <p>リサイクル券を買うときは、メーカー名と、テレビは画面の大きさ（インチ）、冷蔵庫・冷凍庫は容量（リットル）が必要です。</p>
+  </div>`;
+
+  // 区ごとの環境事業所（市HP「よくある質問と回答」より。受付は平日 8:30〜17:15）
+  const OFFICES = {
+    naka: ["中環境事業所", "082-241-0779"], higashi: ["中環境事業所", "082-241-0779"],
+    minami: ["南環境事業所", "082-286-9790"], nishi: ["西環境事業所", "082-277-6404"],
+    asaminami: ["安佐南環境事業所", "082-848-3320"], asakita: ["安佐北環境事業所", "082-814-7884"],
+    aki: ["安芸環境事業所", "082-884-0322"], saeki: ["佐伯環境事業所", "082-922-9211"],
+  };
 
   const WARD_ORDER = ["naka", "higashi", "minami", "nishi", "asaminami", "asakita", "aki", "saeki"];
   const KANA_ROWS = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"];
   const WEEK = ["日", "月", "火", "水", "木", "金", "土"];
   const DEADLINE = { h: 8, m: 30 };
-  const POPULAR = ["電池", "傘", "スプレー缶", "フライパン", "ペットボトル", "靴", "かばん", "ふとん", "蛍光灯", "本"];
+  const POPULAR = ["電池", "モバイルバッテリー", "傘", "スプレー缶", "フライパン", "ペットボトル", "靴", "ふとん", "蛍光灯", "本"];
   const STORE_KEY = "gominavi.area";
 
   const $ = (id) => document.getElementById(id);
@@ -523,6 +561,11 @@
         <span class="d">${d ? `${mdShort(d)}<small>${untilLabel(d)}</small>` : "－"}</span></div>`;
     }).join("");
 
+    const [oName, oTel] = OFFICES[S.area.ward] || [];
+    $("office").innerHTML = oName ? `<p class="office">ごみが収集されていない、分別がわからないときは<br>
+      <strong>${esc(oName)}</strong> <a class="tel" href="tel:${oTel.replace(/-/g, "")}">${oTel}</a><br>
+      <small>平日 8:30〜17:15。収集されていないときは当日17:15までに連絡してください。</small></p>` : "";
+
     $("chips").innerHTML = POPULAR.map((p) => `<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join("");
   }
 
@@ -534,8 +577,17 @@
     ["スニーカー", "靴"], ["ブーツ", "靴"], ["パンプス", "靴"], ["くつ下", "くつした"], ["靴下", "くつした"],
     ["書籍", "本"], ["文庫", "本"], ["教科書", "本"], ["絵本", "本"], ["漫画", "本"], ["まんが", "本"], ["マンガ", "本"],
     ["電灯", "電球"], ["でんとう", "でんきゅう"],
-    // キャップ単体の品目は無く、ペットボトルの備考に書かれている
-    ["ペットボトルのふた", "ペットボトル"], ["ペットボトルのキャップ", "ペットボトル"],
+    ["ペットボトルのふた", "ペットボトルのキャップ"], ["キャップ", "ペットボトルのキャップ"], ["ラベル", "ペットボトルのキャップ・ラベル"], ["ペットボトルのラベル", "ペットボトルのキャップ・ラベル"],
+    ["白熱電球", "白熱灯"], ["天ぷら", "てんぷら"], ["使い捨てカイロ", "カイロ"], ["カッターの刃", "カッターナイフの刃"],
+    ["ペットの砂", "ペットのふん"], ["猫砂", "ペットのふん"], ["ねこ砂", "ペットのふん"], ["猫のトイレ", "ペットのふん"],
+    ["ガラスコップ", "その他のガラス"], ["グラス", "その他のガラス"], ["割れたびん", "その他のガラス"], ["ガラスくず", "その他のガラス"],
+    ["化粧品のびん", "化粧品の容器"], ["手鏡", "鏡"], ["サングラス", "めがね"], ["プランターの土", "土"], ["底石", "小石"],
+    ["革のかばん", "皮革"], ["革", "皮革"], ["レザー", "皮革"], ["原付", "原動機付自転車"], ["ノートパソコン", "パソコン"],
+    ["油缶", "食用油の容器"], ["カセットボンベ", "家庭用スプレー"], ["リチウムイオン電池", "充電式電池"],
+    ["灯油", "石油類"], ["ガソリン", "石油類"], ["引っ越し", "一時多量"], ["引越し", "一時多量"],
+    ["台所ごみ", "生ごみ"], ["残飯", "生ごみ"],
+    // 1文字の言葉は、入力と完全に同じときだけ使う
+    ["薬", "くすり"],
   ].map(([from, to]) => [norm(from), to]);
 
   // 「靴(運動靴・…)」のような括弧前の部分を見出し語として優先する
@@ -557,9 +609,11 @@
     const out = [];
     const add = (list) => list.forEach((it) => { if (!seen.has(it)) { seen.add(it); out.push(it); } });
     const nq = norm(q);
+    // 入力が言い換えの言葉そのものなら、言い換え先を先に出す（「薬」→ 農薬より先に「くすり」）
+    for (const [from, to] of ALIASES) if (from === nq) add(searchExact(norm(to)));
     add(searchExact(nq));
     for (const [from, to] of ALIASES) {
-      if (from.length >= 2 && nq.includes(from)) add(searchExact(norm(nq.replace(from, norm(to)))));
+      if (from.length >= 2 && from !== nq && nq.includes(from)) add(searchExact(norm(nq.replace(from, norm(to)))));
     }
     return out;
   }
@@ -614,7 +668,9 @@
       ${it.h ? `<p class="how">${esc(it.h)}</p>` : ""}
       ${it.note ? `<p class="note">※ ${esc(it.note.replace(/^※\s*/, ""))}</p>` : ""}
       ${c.tip && !/同じ日/.test(it.h || "") ? `<p class="tip">${esc(c.tip)}</p>` : ""}
+      ${/電池|バッテリー/.test(it.n) && it.c === "有害ごみ" && !/テープ/.test(it.h || "") ? `<p class="tip">電池は、端子部分をテープで覆ってから出してください（ショートによる発火を防ぐため）。</p>` : ""}
       ${c.reserve ? reserveBox() : ""}
+      ${c.kaden ? kadenBox() : ""}
       ${next}
     </div>`;
   }
