@@ -137,6 +137,8 @@
 
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   .chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 14px; cursor: pointer; }
+  .chips-head { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 2px -4px; font-size: 13px; color: var(--sub); }
+  .chips-head button { border: 0; background: none; color: var(--sub); font-size: 13px; text-decoration: underline; cursor: pointer; padding: 0; }
 
   .results { margin-top: 14px; }
   .result { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
@@ -252,7 +254,7 @@
     </div>
 
     <div id="home">
-      <div class="chips" id="chips"></div>
+      <div id="chips"></div>
       <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日">
         <h2>種類ごとの次の収集日</h2>
         <div id="kinds"></div>
@@ -364,6 +366,8 @@
   const DEADLINE = { h: 8, m: 30 };
   const POPULAR = ["電池", "モバイルバッテリー", "傘", "スプレー缶", "フライパン", "ペットボトル", "靴", "ふとん", "蛍光灯", "本"];
   const STORE_KEY = "gominavi.area";
+  const HISTORY_KEY = "gominavi.history";
+  const HISTORY_MAX = 10;
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -580,7 +584,32 @@
       <strong>${esc(oName)}</strong> <a class="tel" href="tel:${oTel.replace(/-/g, "")}">${oTel}</a><br>
       <small>平日 8:30〜17:15。収集されていないときは当日17:15までに連絡してください。</small></p>` : "";
 
-    $("chips").innerHTML = POPULAR.map((p) => `<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join("");
+    renderChips();
+  }
+
+  // ---- 検索履歴（この端末の中だけに保存） ----
+  const recent = {
+    get() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; } },
+    set(v) { try { localStorage.setItem(HISTORY_KEY, JSON.stringify(v)); } catch {} },
+    add(q) {
+      q = q.trim();
+      if (!q) return;
+      const nq = norm(q);
+      let list = recent.get();
+      // 打ちかけの言葉（「でん」→「電池」）が残らないよう、直前のものが今回の言葉の途中なら置き換える
+      if (list.length && nq.startsWith(norm(list[0]))) list.shift();
+      list = [q, ...list.filter((x) => norm(x) !== nq)].slice(0, HISTORY_MAX);
+      recent.set(list);
+    },
+  };
+
+  // 調べたことがあれば履歴を、初めてならよく調べられる品目を表示
+  function renderChips() {
+    const list = recent.get();
+    const chips = (arr) => `<div class="chips">${arr.map((p) => `<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join("")}</div>`;
+    $("chips").innerHTML = list.length
+      ? `<div class="chips-head"><span>最近調べたもの</span><button id="clearHistory">履歴を消す</button></div>${chips(list)}`
+      : chips(POPULAR);
   }
 
   // ---- 品目検索 ----
@@ -690,13 +719,17 @@
   }
 
   const LIMIT = 30;
+  let saveTimer = null;
   function render() {
     const q = $("q").value;
     $("searchBox").classList.toggle("filled", q.length > 0);
     $("home").hidden = !!q.trim();
-    if (!q.trim()) { $("results").innerHTML = ""; return; }
+    clearTimeout(saveTimer);
+    if (!q.trim()) { $("results").innerHTML = ""; renderChips(); return; }
 
     const hits = search(q);
+    // 結果が出たまま少し手が止まったら、履歴に残す
+    if (hits.length) saveTimer = setTimeout(() => recent.add(q), 2000);
     if (!hits.length) {
       const near = suggest(q).slice(0, 8);
       $("results").innerHTML = `<div class="empty">「${esc(q)}」は見つかりませんでした。<br>
@@ -712,6 +745,8 @@
   function setQuery(q) {
     $("q").value = q;
     render();
+    clearTimeout(saveTimer);
+    recent.add(q);
     window.scrollTo({ top: $("searchBox").offsetTop - 12, behavior: "smooth" });
   }
 
@@ -773,7 +808,13 @@
 
   $("q").addEventListener("input", render);
   $("clear").addEventListener("click", () => { $("q").value = ""; render(); $("q").focus(); });
+  // 決定キー・入力欄から離れたときも履歴に残す（見つかったときだけ）
+  $("q").addEventListener("change", () => {
+    const q = $("q").value;
+    if (q.trim() && search(q).length) { clearTimeout(saveTimer); recent.add(q); }
+  });
   $("main").addEventListener("click", (e) => {
+    if (e.target.id === "clearHistory") { recent.set([]); renderChips(); return; }
     const b = e.target.closest("[data-q]");
     if (b) setQuery(b.dataset.q);
   });
