@@ -205,6 +205,21 @@
   .share .link-btn { font-size: 15px; padding: 10px 14px; }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
   .error { text-align: center; padding: 40px 8px; color: var(--sub); }
+  /* よくある質問（ふだんは見出し1行だけ） */
+  .faq { margin-top: 28px; padding: 0; }
+  .faq > summary { list-style: none; cursor: pointer; padding: 14px 16px; font-size: 15px; font-weight: 700; color: var(--sub); display: flex; justify-content: space-between; align-items: center; }
+  .faq > summary::-webkit-details-marker, .faq .q summary::-webkit-details-marker { display: none; }
+  .faq > summary::after { content: "＋"; font-weight: 400; }
+  .faq[open] > summary::after { content: "－"; }
+  .faq .q { border-top: 1px solid var(--line); }
+  .faq .q summary { list-style: none; cursor: pointer; padding: 12px 16px; font-size: 15px; }
+  .faq .q summary::before { content: "Q. "; color: var(--accent); font-weight: 700; }
+  .faq .q[open] summary { font-weight: 700; }
+  .faq .a { padding: 0 16px 14px; font-size: 14px; }
+  .faq .a p, .faq .a ul { margin: 0 0 6px; }
+  .faq .a ul { padding-left: 1.2em; }
+  .faq .a a { color: var(--accent); }
+  .faq .src { font-size: 12px; color: var(--sub); padding: 10px 16px 14px; margin: 0; border-top: 1px solid var(--line); }
   footer { font-size: 12px; color: var(--sub); margin-top: 28px; line-height: 1.8; }
   footer a { color: var(--sub); }
 </style>
@@ -296,6 +311,76 @@
   </main>
 
   <div class="error" id="error" hidden></div>
+
+  <!-- よくある質問：Google の検索候補・市の「よくある質問と回答」・Yahoo!知恵袋で多かった疑問から。
+       答えは市HP「家庭ごみの正しい出し方」などで確認（2026-10-19）。祝日の日付は毎年4月に更新する -->
+  <details class="card faq">
+    <summary>よくある質問</summary>
+    <details class="q"><summary>ペットボトルは何曜日に出す？</summary><div class="a">
+      <p>週1回、リサイクルプラと同じ日です。曜日は町によって違うので、このページで町名を選ぶと表示されます。</p>
+      <p>キャップとラベルをはずし、中を水洗いしてつぶして出します。リサイクルプラとは袋を分けてください。</p>
+    </div></details>
+    <details class="q"><summary>可燃ごみの袋は何でもいい？紙袋でもポリ袋でもいい？</summary><div class="a">
+      <p>じょうぶな紙袋か、ポリ袋に入れて出します（土のう袋は不可）。紙袋・ポリ袋のどちらでも収集されます。家庭ごみに市の指定袋はありません。</p>
+      <p>リサイクルプラ・その他プラ・不燃ごみは、中身が見える透明か半透明のポリ袋で出してください。</p>
+    </div></details>
+    <details class="q"><summary>「リサイクルプラ」と「その他プラ」の違いは？</summary><div class="a">
+      <p><strong>リサイクルプラ</strong>（週1回）は、商品の容器や包装に使われていたプラスチックです。例：お菓子やパンの袋、食品のパック・カップ、ボトルのキャップ・ラベル、レジ袋、発泡スチロールの梱包材。</p>
+      <p><strong>その他プラ</strong>（月2回）は、それ以外のプラスチック製品です。例：おもちゃ、くつ・スリッパ、CD・DVD、プラスチックのハンガー、家庭で使ったラップ、スポンジ。</p>
+    </div></details>
+    <details class="q"><summary>汚れたプラスチック（お菓子の袋など）は洗う？</summary><div class="a">
+      <p>水洗いしたり拭き取ったりして汚れを取り、リサイクルプラで出します。中身や汚れが取れないものは可燃ごみで出してください。</p>
+    </div></details>
+    <details class="q"><summary>ペットボトルの口に残る白いリングははずす？</summary><div class="a">
+      <p>はずさなくてかまいません。キャップとラベルははずして、リサイクルプラで出してください。</p>
+    </div></details>
+    <details class="q"><summary>不燃ごみには何を出す？袋は？</summary><div class="a">
+      <p>茶わん・皿などの陶磁器、傘、電球、カイロ、アルミホイル、30cm未満の小型家電（ドライヤー・アイロンなど）です。</p>
+      <ul>
+        <li>2026年4月から、透明か半透明のじょうぶなポリ袋でないと出せなくなりました。</li>
+        <li>ライターは別の袋に入れて「ライター」と書きます。</li>
+        <li>電池をはずせない充電式の家電は、別の袋に入れて「危険」と書きます。</li>
+        <li>電池は有害ごみです。</li>
+      </ul>
+    </div></details>
+    <details class="q"><summary>ごみは朝何時までに出す？</summary><div class="a">
+      <p>収集日の朝8時30分までに出してください。夕方になっても収集されないときは、17時15分までに区の環境事業所へ連絡します。</p>
+    </div></details>
+    <details class="q"><summary>祝日もごみは収集される？</summary><div class="a">
+      <p><strong>可燃ごみ・ペットボトル・リサイクルプラ</strong>は、祝日によって収集する日としない日があります（2026年度）。</p>
+      <ul>
+        <li>収集する：4/29、7/20、8/6・11、9/21・22・23、10/12、12/29・30、1/11</li>
+        <li>収集しない：5/4・5・6、11/3・23、12/31、1/1〜3、2/11・23、3/22</li>
+      </ul>
+      <p><strong>その他プラ・不燃ごみ・資源ごみ・有害ごみ</strong>は、祝日も日程どおり収集します。このページのカレンダーは、市の日程表どおりです。</p>
+    </div></details>
+    <details class="q"><summary>年末年始の収集はどうなる？</summary><div class="a">
+      <p>12月31日〜1月3日は、すべてのごみの収集がお休みです。12月29日・30日は通常どおり収集します。</p>
+      <p>大型ごみ受付センターは12月29日〜1月3日がお休みです。</p>
+    </div></details>
+    <details class="q"><summary>大型ごみの出し方・料金は？</summary><div class="a">
+      <p>一番長い辺が30cm以上のもの（棒や板のようなものは1m以上）が大型ごみです。有料・予約制です。</p>
+      <ul>
+        <li>予約：大型ごみ受付センター（0570-082530 または 082-544-5300、平日9時〜18時）。インターネットやLINEなら24時間受付です。</li>
+        <li>締め切り：電話は収集日の3日前、インターネットは5日前まで（土日祝を除いて数えます）。</li>
+        <li>料金：品目ごとに決まった額の納付券（250円・1000円）をコンビニなどで買い、貼って出します。</li>
+      </ul>
+    </div></details>
+    <details class="q"><summary>ごみを自分で持ち込める場所はある？</summary><div class="a">
+      <ul>
+        <li>可燃ごみ：中工場・安佐南工場・安佐北工場</li>
+        <li>その他プラ：中工場</li>
+        <li>不燃ごみ：恵下埋立地（佐伯区湯来町）</li>
+        <li>資源ごみ：西部リサイクルプラザ・北部資源選別センター</li>
+        <li>大型ごみ：安佐南工場 大型ごみ破砕処理施設</li>
+      </ul>
+      <p>ペットボトル・リサイクルプラ・有害ごみは持ち込めないので、収集日に出してください。受付の日時は各施設にご確認ください（<a href="https://www.city.hiroshima.lg.jp/faq/gomi-kankyo/1001569/1002048.html" target="_blank" rel="noopener">市の案内</a>）。</p>
+    </div></details>
+    <details class="q"><summary>引っ越しで大量のごみが出るときは？</summary><div class="a">
+      <p>引っ越しなどで一度にたくさん出るごみは、市では収集しません。分別して自分で市の処理施設に持ち込むか、市の許可を受けた業者に頼んでください。許可のない回収業者は使わないでください。</p>
+    </div></details>
+    <p class="src">出典：広島市「家庭ごみの正しい出し方」「よくある質問と回答」など。判断に迷うものは、市のホームページか区の環境事業所でご確認ください。</p>
+  </details>
 
   <footer>
     このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。<br>
