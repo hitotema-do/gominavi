@@ -19,7 +19,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       LABEL: 見張り番
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - id: check
         run: python scripts/watch_opendata.py ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
