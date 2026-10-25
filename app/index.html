@@ -146,6 +146,7 @@
   .results { margin-top: 14px; }
   .result { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
   .result h3 { margin: 0 0 8px; font-size: 17px; }
+  .result h3 small { display: block; font-size: 13px; font-weight: 400; color: var(--sub); }
   .tag { display: inline-block; font-weight: 700; font-size: 15px; padding: 3px 10px; border-radius: 6px; color: #fff; }
   @media (prefers-color-scheme: dark) { .tag { color: #111; } }
   .how { margin: 10px 0 0; }
@@ -317,9 +318,10 @@
   <div class="error" id="error" hidden></div>
 
   <!-- よくある質問：Google の検索候補・市の「よくある質問と回答」・Yahoo!知恵袋で多かった疑問から。
-       答えは市HP「家庭ごみの正しい出し方」などで確認（2026-10-19）。祝日の日付は毎年4月に更新する -->
+       答えは市HP「家庭ごみの正しい出し方」などで確認（2026-10-19）。祝日の日付は毎年4月に更新する（英語版は script 内の EN.html.faqBody） -->
   <details class="card faq">
     <summary data-i="faq">よくある質問</summary>
+    <div data-i="faqBody">
     <details class="q"><summary>ペットボトルは何曜日に出す？</summary><div class="a">
       <p>週1回、リサイクルプラと同じ日です。曜日は町によって違うので、このページで町名を選ぶと表示されます。</p>
       <p>キャップとラベルをはずし、中を水洗いしてつぶして出します。リサイクルプラとは袋を分けてください。</p>
@@ -384,6 +386,7 @@
       <p>引っ越しなどで一度にたくさん出るごみは、市では収集しません。分別して自分で市の処理施設に持ち込むか、市の許可を受けた業者に頼んでください。許可のない回収業者は使わないでください。</p>
     </div></details>
     <p class="src">出典：広島市「家庭ごみの正しい出し方」「よくある質問と回答」など。判断に迷うものは、市のホームページか区の環境事業所でご確認ください。</p>
+    </div>
   </details>
 
   <footer>
@@ -542,7 +545,71 @@
       prevMonth: "Previous month",
       nextMonth: "Next month",
       calNote: "PET bottles are collected with recyclable plastics, and hazardous waste with recyclables. Large-sized waste is collected only with a reservation.",
-      faq: "FAQ (Japanese only)",
+      faq: "FAQ",
+      faqBody: `<details class="q"><summary>Which day are PET bottles collected?</summary><div class="a">
+      <p>Once a week, on the same day as recyclable plastics. The day depends on your town; select your town on this page to see it.</p>
+      <p>Remove the cap and label, rinse the inside, crush the bottle and put it out. Use a bag separate from recyclable plastics.</p>
+    </div></details>
+    <details class="q"><summary>What bag should I use for combustible waste? Paper or plastic?</summary><div class="a">
+      <p>Use a strong paper bag or a plastic bag (no sandbags). Either is collected. The city has no designated garbage bags for households.</p>
+      <p>Recyclable plastics, other plastics and non-combustible waste must be put out in clear or semi-clear plastic bags so the contents can be seen.</p>
+    </div></details>
+    <details class="q"><summary>What is the difference between "recyclable plastics" and "other plastics"?</summary><div class="a">
+      <p><strong>Recyclable plastics</strong> (once a week) are plastic containers and packaging of products. Examples: snack and bread bags, food trays and cups, bottle caps and labels, shopping bags, styrofoam packing.</p>
+      <p><strong>Other plastics</strong> (twice a month) are all other plastic products. Examples: toys, shoes and slippers, CDs and DVDs, plastic hangers, plastic wrap used at home, sponges.</p>
+    </div></details>
+    <details class="q"><summary>Do I need to wash dirty plastic (e.g. snack bags)?</summary><div class="a">
+      <p>Rinse or wipe off the dirt and put it out as recyclable plastics. If the contents or dirt cannot be removed, put it out as combustible waste.</p>
+    </div></details>
+    <details class="q"><summary>Should I remove the plastic ring left on a PET bottle neck?</summary><div class="a">
+      <p>No, you don't need to. Remove the cap and label and put them out as recyclable plastics.</p>
+    </div></details>
+    <details class="q"><summary>What goes in non-combustible waste? What bag?</summary><div class="a">
+      <p>Ceramics such as bowls and plates, umbrellas, light bulbs, hand warmers, aluminum foil, and small appliances under 30 cm (hair dryers, irons, etc.).</p>
+      <ul>
+        <li>Since April 2026, it must be put out in a strong clear or semi-clear plastic bag.</li>
+        <li>Put lighters in a separate bag and write "ライター" (lighter) on it.</li>
+        <li>For rechargeable appliances whose battery cannot be removed, use a separate bag and write "危険" (danger) on it.</li>
+        <li>Batteries are hazardous waste.</li>
+      </ul>
+    </div></details>
+    <details class="q"><summary>By what time should I put garbage out?</summary><div class="a">
+      <p>By 8:30 a.m. on collection day. If it has not been collected by evening, contact your ward's environmental office by 17:15.</p>
+    </div></details>
+    <details class="q"><summary>Is garbage collected on national holidays?</summary><div class="a">
+      <p><strong>Combustible waste, PET bottles and recyclable plastics</strong> are collected on some holidays and not on others (FY2026).</p>
+      <ul>
+        <li>Collected: 4/29, 7/20, 8/6, 8/11, 9/21, 9/22, 9/23, 10/12, 12/29, 12/30, 1/11</li>
+        <li>Not collected: 5/4, 5/5, 5/6, 11/3, 11/23, 12/31, 1/1–1/3, 2/11, 2/23, 3/22</li>
+      </ul>
+      <p><strong>Other plastics, non-combustible waste, recyclables and hazardous waste</strong> are collected on schedule even on holidays. The calendar on this page follows the city's schedule.</p>
+    </div></details>
+    <details class="q"><summary>What about the New Year holidays?</summary><div class="a">
+      <p>There is no collection of any kind from December 31 to January 3. December 29 and 30 are normal collection days.</p>
+      <p>The Large-sized Waste Reception Center is closed from December 29 to January 3.</p>
+    </div></details>
+    <details class="q"><summary>How do I put out large-sized waste? How much does it cost?</summary><div class="a">
+      <p>Items with a longest side of 30 cm or more (1 m or more for poles and boards) are large-sized waste. It requires a fee and a reservation.</p>
+      <ul>
+        <li>Reservations: Large-sized Waste Reception Center (0570-082530 or 082-544-5300, weekdays 9:00–18:00, Japanese). Online and LINE reservations are accepted 24 hours.</li>
+        <li>Deadline: 3 days before collection by phone, 5 days online (not counting Saturdays, Sundays and holidays).</li>
+        <li>Fee: buy a payment ticket (250 or 1,000 yen, set for each item) at a convenience store or similar, and attach it to the item.</li>
+      </ul>
+    </div></details>
+    <details class="q"><summary>Where can I bring garbage myself?</summary><div class="a">
+      <ul>
+        <li>Combustible waste: Naka Plant, Asaminami Plant, Asakita Plant</li>
+        <li>Other plastics: Naka Plant</li>
+        <li>Non-combustible waste: Ege Landfill (Yuki-cho, Saeki-ku)</li>
+        <li>Recyclables: Seibu Recycling Plaza, Hokubu Resource Sorting Center</li>
+        <li>Large-sized waste: Asaminami Plant, Large-sized Waste Crushing Facility</li>
+      </ul>
+      <p>PET bottles, recyclable plastics and hazardous waste cannot be brought in; put them out on collection day. Check each facility for reception days and hours (<a href="https://www.city.hiroshima.lg.jp/faq/gomi-kankyo/1001569/1002048.html" target="_blank" rel="noopener">city information, Japanese</a>).</p>
+    </div></details>
+    <details class="q"><summary>What if I have a lot of garbage when moving?</summary><div class="a">
+      <p>The city does not collect large amounts put out at one time, e.g. when moving. Sort it and take it to a city facility yourself, or hire a company licensed by the city. Please do not use unlicensed collectors.</p>
+    </div></details>
+    <p class="src">Sources: Hiroshima City "How to put out household garbage", "FAQ", etc. (Japanese). If you are unsure, check the city website or contact your ward's environmental office.</p>`,
       unofficial: `This app is not an official service of Hiroshima City. For the latest information, or if you are unsure, please check the <a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">Hiroshima City website</a> (Japanese).`,
       source: `Data: <a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">Hiroshima City household waste collection and sorting data (open data)</a>`,
       license: `Created by processing the above data (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>).`,
@@ -603,7 +670,7 @@
       largeDay: "Large-sized waste day in this area", next: "Next collection", outOfRange: "Out of data range",
       batteryTip: "Cover the battery terminals with tape before putting them out (to prevent fire from short circuits).",
       notFound: (q) => `No results for "${esc(q)}".`,
-      near: "Similar items:", tryOther: "Item names are in Japanese. Try another word or a material (プラスチック: plastic, 金属: metal).",
+      near: "Similar items:", tryOther: "Try another word, or a material (e.g. plastic, metal).",
       more: (n) => `${n} more results. Try a more specific word.`,
       calTitle: (y, m) => `${EN.monthsLong[m]} ${y}`,
       calDay: (m, d) => `${EN.months[m]} ${d}`,
@@ -612,6 +679,13 @@
     },
   };
   const L = () => TXT[lang];
+
+  // 品目名・出し方・備考の英訳（英語表示のときだけ読み込む。訳のないものは日本語のまま）
+  let itemsEn = null, itemsEnLoading = null;
+  const loadItemsEn = () => itemsEnLoading || (itemsEnLoading = getJSON("data/items_en.json")
+    .then((d) => { itemsEn = d; index = []; if (S) buildIndex(); })
+    .catch(() => { itemsEnLoading = null; }));
+  const tr = (group, ja) => (isEn() && itemsEn && itemsEn[group][ja]) || ja;
   const kindName = (key) => isEn() ? EN.kinds[key][0] : KINDS[key].name;
   const kindShort = (key) => isEn() ? EN.kinds[key][1] : KINDS[key].short;
   const wardName = (code, ja) => isEn() ? EN.wards[code] || ja : ja;
@@ -793,7 +867,7 @@
     $("areaBox").hidden = false;
     $("areaName").textContent = isEn() ? townLabel(area) : areaLabel(area); // 英語は長くなるので町名だけ
     try {
-      const [wardData, items] = await Promise.all([getJSON(`data/${area.ward}.json`), S?.items || getJSON("data/items.json")]);
+      const [wardData, items] = await Promise.all([getJSON(`data/${area.ward}.json`), S?.items || getJSON("data/items.json"), isEn() && loadItemsEn()]);
       const sched = wardData.groups[area.group];
       if (!sched) return openSetup(); // 年度替わりでグループが無くなった場合は選び直し
       S = { area, temporary, sched, oSet: new Set(sched.o), start: fromYmd(wardData.start), end: fromYmd(wardData.end), items };
@@ -907,6 +981,8 @@
     ["薬", "くすり"],
     // 英語表示のよく使う品目は英語でも探せるようにする
     ...EN.popular.map((en, i) => [en, POPULAR[i]]),
+    ["plastic bottle", "ペットボトル"], ["tv", "テレビ"], ["television", "テレビ"], ["smartphone", "携帯電話"], ["cell phone", "携帯電話"],
+    ["laptop", "パソコン"], ["fridge", "冷蔵庫"], ["glass bottle", "びん"], ["garbage bag", "レジ袋"], ["oil", "食用油"],
     ["battery", "電池"], ["power bank", "モバイルバッテリー"], ["spray can", "スプレー缶"], ["shoe", "靴"], ["book", "本"], ["pet bottle", "ペットボトル"],
   ].map(([from, to]) => [norm(from), to]);
 
@@ -915,12 +991,15 @@
   let index = [];
   function buildIndex() {
     if (index.length) return;
-    index = S.items.map((it) => ({
-      it,
-      name: norm(it.n),
-      heads: [head(it.n), head(it.y)],
-      key: norm(it.n) + "|" + norm(it.y || ""),
-    }));
+    index = S.items.map((it) => {
+      const en = itemsEn && itemsEn.names[it.n];
+      return {
+        it,
+        name: norm(it.n),
+        heads: [head(it.n), head(it.y), ...(en ? [head(en)] : [])],
+        key: norm(it.n) + "|" + norm(it.y || "") + (en ? "|" + norm(en) : ""),
+      };
+    });
   }
 
   // 言い換えも含めて検索（元の言葉のヒットが先）
@@ -964,10 +1043,16 @@
     return hits.map((h) => h.x.it);
   }
 
+  // 英語表示では英語名の下に日本語名を添える（店や窓口で見せられるように）
+  const itemTitle = (it) => {
+    const en = tr("names", it.n);
+    return en !== it.n ? `<h3>${esc(en)}<small lang="ja">${esc(it.n)}</small></h3>` : `<h3>${esc(it.n)}</h3>`;
+  };
+
   function itemCard(it) {
     if (it.ref) {
-      return `<div class="result"><h3>${esc(it.n)}</h3>
-        <p class="how">${L().see(`<button class="ref" data-q="${esc(it.ref)}">「${esc(it.ref)}」</button>`)}</p></div>`;
+      return `<div class="result">${itemTitle(it)}
+        <p class="how">${L().see(`<button class="ref" data-q="${esc(it.ref)}">${isEn() ? esc(tr("names", it.ref)) : `「${esc(it.ref)}」`}</button>`)}</p></div>`;
     }
     const c = CATS[it.c] || {};
     const k = c.kind ? KINDS[c.kind] : null;
@@ -983,10 +1068,10 @@
         : `<div class="next"><span class="t">${label}</span><span class="v">${L().outOfRange}</span></div>`;
     }
     return `<div class="result">
-      <h3>${esc(it.n)}</h3>
+      ${itemTitle(it)}
       <span class="tag" style="background:${color}">${esc(isEn() ? EN.cats[it.c] || it.c : it.c)}</span>
-      ${it.h ? `<p class="how">${esc(it.h)}</p>` : ""}
-      ${it.note ? `<p class="note">※ ${esc(it.note.replace(/^※\s*/, ""))}</p>` : ""}
+      ${it.h ? `<p class="how">${esc(tr("how", it.h))}</p>` : ""}
+      ${it.note ? `<p class="note">※ ${esc(tr("notes", it.note).replace(/^[※*]\s*/, ""))}</p>` : ""}
       ${c.tip && !/同じ日/.test(it.h || "") ? `<p class="tip">${esc(isEn() ? EN.tips[it.c] : c.tip)}</p>` : ""}
       ${/電池|バッテリー/.test(it.n) && it.c === "有害ごみ" && !/テープ/.test(it.h || "") ? `<p class="tip">${L().batteryTip}</p>` : ""}
       ${c.reserve ? reserveBox() : ""}
@@ -1012,7 +1097,7 @@
       $("results").innerHTML = `<div class="empty">${L().notFound(q)}<br>
         <small>${near.length ? L().near : L().tryOther}</small>
         ${near.length ? `<div class="chips" style="justify-content:center">${near.map((it) =>
-          `<button class="chip" data-q="${esc(it.n)}">${esc(it.n)}</button>`).join("")}</div>` : ""}</div>`;
+          `<button class="chip" data-q="${esc(it.n)}">${esc(tr("names", it.n))}</button>`).join("")}</div>` : ""}</div>`;
       return;
     }
     $("results").innerHTML = hits.slice(0, LIMIT).map(itemCard).join("")
@@ -1111,6 +1196,7 @@
         openTowns(townWard).then(() => { $("townQ").value = q; $("townQ").oninput(); });
       } else openSetup();
     }
+    if (isEn() && !itemsEn) loadItemsEn().then(() => { if (S && isEn()) render(); });
     if (S) {
       // カレンダーを開いている間も、戻ったときのためにメインを描き直しておく
       $("areaName").textContent = isEn() ? townLabel(S.area) : areaLabel(S.area);
