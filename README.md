@@ -12,11 +12,13 @@
 2. ZIP を `data/raw/r◯/`（令和の年度）に展開し、事典を `data/raw/bunbetsu_jiten.csv` に置き換え
 3. `scripts/build_data.py` の `YEAR_DIR` を書き換えて `python scripts/build_data.py`（読み仮名検索用に `pip install pykakasi` 推奨）
 4. `app/sw.js` の `CACHE` の番号を1つ上げる
+5. よくある質問の祝日の日付を、日本語（HTML）と英語（`EN.html.faqBody`）の両方で更新する
 
 ## 補足
 
 - ペットボトルはリサイクルプラと同じ日、有害ごみは資源ごみと同じ日（収集日程表CSVには載っていないため、アプリ側で対応付けている）
 - 選んだ地域は端末の localStorage にだけ保存する
-- 英語表示：画面右上のボタンで切り替え（初回は端末の言語設定で自動選択）。訳語は `app/index.html` の `EN`・`TXT` にまとめてある。品目名・出し方・よくある質問の本文は日本語のまま
+- 英語表示：画面右上のボタンで切り替え（初回は端末の言語設定で自動選択）。画面の文言とよくある質問の英語版は `app/index.html` の `EN`・`TXT`
+- 品目名・出し方・備考の英訳は `data/i18n/*_en.tsv`（日本語<TAB>英語）で管理し、`build_data.py` が `app/data/items_en.json` を作る。年度更新で英訳のない品目が出ると一覧表示されるので、tsv に追記して再実行する（訳がなければ画面では日本語で表示）
 - LINEなどで送ったときのカード画像（app/og.png）は `python scripts/make_og_image.py` で作り直せる
 - ローカル確認：`python -m http.server 8766 --directory app`

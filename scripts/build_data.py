@@ -8,6 +8,10 @@ YEAR_DIR を書き換えてこのスクリプトを実行する:
     app/data/items.json      品目（市内共通）
     app/data/wards.json      区・町名・グループの一覧（初回の地域選択用）
     app/data/<区コード>.json  その区の全グループの収集日
+    app/data/items_en.json   品目名・出し方・備考の英訳（英語表示用）
+
+英訳は data/i18n/*_en.tsv（日本語<TAB>英語）で管理する。年度更新で新しい品目や
+文言が増えると、英訳のないものを一覧表示するので、tsv に追記して再実行する。
 """
 import csv
 import json
@@ -33,6 +37,7 @@ KINDS = {"可燃": "k", "リプラ": "r", "他プラ": "p", "不燃": "f", "資�
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
+I18N = ROOT / "data" / "i18n"
 OUT = ROOT / "app" / "data"
 
 try:
@@ -196,6 +201,25 @@ def build_schedule(no, name, groups):
     return days, sched
 
 
+def build_items_en(items):
+    """英訳の対訳表から、今年度の品目で使う分だけを取り出す。訳のないものは画面では日本語で表示される"""
+    def table(name):
+        rows = (line.rstrip("\n").split("\t") for line in (I18N / f"{name}_en.tsv").read_text(encoding="utf-8").splitlines() if line)
+        return dict(rows)
+
+    out = {}
+    for key, field in (("names", "n"), ("how", "h"), ("notes", "note")):
+        tsv = table(key)
+        used = list(dict.fromkeys(it[field] for it in items if it.get(field)))
+        out[key] = {ja: tsv[ja] for ja in used if ja in tsv}
+        missing = [ja for ja in used if ja not in tsv]
+        if missing:
+            print(f"英訳なし（data/i18n/{key}_en.tsv に追記）: {len(missing)} 件")
+            for ja in missing:
+                print(f"  {ja}")
+    return out
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -206,6 +230,7 @@ def main():
 
     items = build_items()
     write("items.json", items)
+    write("items_en.json", build_items_en(items))
 
     index = []
     for no, name, code in WARDS:
