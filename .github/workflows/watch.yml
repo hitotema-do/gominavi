@@ -1,0 +1,65 @@
+name: Watch Hiroshima open data
+
+# 毎朝7時（日本時間）に起動。見張る日かどうかは scripts/watch_opendata.py が決める
+# （1/15〜4/10 は毎日、それ以外は毎月1日だけ）。
+on:
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      LABEL: 見張り番
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        run: python scripts/watch_opendata.py ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
+
+      - name: Notify by issue
+        if: steps.check.outputs.changes != ''
+        env:
+          CHANGES: ${{ steps.check.outputs.changes }}
+        run: |
+          gh label create "$LABEL" --color FBCA04 --force
+          if [ -n "$(gh issue list --label "$LABEL" --state open --json number --jq '.[].number')" ]; then
+            echo "お知らせ済み（開いている issue あり）"; exit 0
+          fi
+          gh issue create --label "$LABEL" \
+            --title "【ゴミナビ】広島市の新しいデータが出ました" \
+            --body "@${{ github.repository_owner }} 広島市オープンデータに、ゴミナビがまだ使っていないデータがあります。
+
+          $CHANGES
+
+          Claude に「ゴミナビ更新して」と伝えてください。更新が終わったらこの issue を閉じます。"
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          gh label create "$LABEL" --color FBCA04 --force
+          if [ -n "$(gh issue list --label "$LABEL" --state open --json number --jq '.[].number')" ]; then
+            echo "お知らせ済み（開いている issue あり）"; exit 0
+          fi
+          gh issue create --label "$LABEL" \
+            --title "【ゴミナビ】見張り番がうまく動きませんでした" \
+            --body "@${{ github.repository_owner }} 市のオープンデータのページが読み取れませんでした。サイトの作りが変わった可能性があります。
+
+          記録：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Claude に「見張り番が失敗したみたい」と伝えてください。"
+
+      # 60日間リポジトリに動きがないと GitHub が定期実行を止めるので、月1回「使っています」と合図する
+      - name: Keep schedule alive
+        if: always()
+        run: |
+          if [ "$(TZ=Asia/Tokyo date +%d)" = "01" ]; then
+            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/watch.yml/enable"
+          fi

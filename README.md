@@ -8,11 +8,15 @@
 
 ## 毎年4月のデータ更新
 
+見張り番（`.github/workflows/watch.yml` → `scripts/watch_opendata.py`）が、1/15〜4/10 は毎日、それ以外は毎月1日に市のオープンデータを確認する。`data/opendata_state.json` に記録した「使っているデータ」と違うものが出ると、「見張り番」ラベルの issue を作る（持ち主にメール通知）。届いたら以下を行う。
+
 1. [広島市オープンデータ](https://hiroshima-opendata.dataeye.jp/datasets/1338) から新年度の「家庭ごみ収集日程表」(ZIP) と「家庭ごみ分別50音事典」(CSV) を取得
 2. ZIP を `data/raw/r◯/`（令和の年度）に展開し、事典を `data/raw/bunbetsu_jiten.csv` に置き換え
 3. `scripts/build_data.py` の `YEAR_DIR` を書き換えて `python scripts/build_data.py`（読み仮名検索用に `pip install pykakasi` 推奨）
 4. `app/sw.js` の `CACHE` の番号を1つ上げる
 5. よくある質問の祝日の日付を、日本語（HTML）と英語（`EN.html.faqBody`）の両方で更新する
+6. 新しいCSVは機械的に変換せず、去年との違い（列・ファイル名・区分の名前）を見てから使い、いくつかの町を市のPDFカレンダーと突き合わせる
+7. `python scripts/watch_opendata.py --record` で見張り番の記録を新しくしてコミットし、issue を閉じる
 
 ## 補足
 
