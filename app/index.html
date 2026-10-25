@@ -70,6 +70,9 @@
   header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0 14px; }
   header h1 { font-size: 18px; margin: 0; letter-spacing: .02em; white-space: nowrap; flex: none; }
   .area { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  /* 言語の切り替え（見出しの上の小さな行） */
+  .topbar { display: flex; justify-content: flex-end; }
+  .lang { font-size: 12px; font-weight: 700; padding: 3px 10px; }
   .area span { font-size: 14px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .link-btn {
     border: 1px solid var(--line); background: var(--card); border-radius: 8px;
@@ -226,27 +229,28 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar"><button class="link-btn lang" id="lang" type="button" lang="en">English</button></div>
   <header>
-    <h1>広島市ゴミナビ</h1>
+    <h1 data-i="title">広島市ゴミナビ</h1>
     <div class="area" id="areaBox" hidden>
       <span id="areaName"></span>
-      <button class="link-btn" id="changeArea">地域を変更</button>
+      <button class="link-btn" id="changeArea" data-i="changeArea">地域を変更</button>
     </div>
   </header>
 
   <!-- 地域の選択 -->
   <main id="setup" hidden>
     <div id="stepWard">
-      <p class="lead">お住まいの区を<br>選んでください</p>
+      <p class="lead" data-i="pickWard">お住まいの区を<br>選んでください</p>
       <div id="setupMsg"></div>
-      <p class="lead-sub">選んだ地域はこの端末の中だけに保存されます。</p>
+      <p class="lead-sub" data-i="savedLocal">選んだ地域はこの端末の中だけに保存されます。</p>
       <div class="wards" id="wards"></div>
     </div>
     <div id="stepTown" hidden>
-      <button class="back" id="backWard">← 区を選び直す</button>
-      <p class="lead"><span id="wardTitle"></span>の町名を<br>選んでください</p>
+      <button class="back" id="backWard" data-i="backWard">← 区を選び直す</button>
+      <p class="lead" id="townLead"></p>
       <div class="search">
-        <input id="townQ" type="search" placeholder="町名で絞り込み（ひらがなでもOK）" autocomplete="off" aria-label="町名で絞り込み">
+        <input id="townQ" type="search" placeholder="町名で絞り込み（ひらがなでもOK）" autocomplete="off" aria-label="町名で絞り込み" data-i-ph="townQ" data-i-aria="townQ">
       </div>
       <div class="towns" id="towns"></div>
     </div>
@@ -255,41 +259,41 @@
   <!-- メイン -->
   <main id="main" hidden>
     <div id="banner"></div>
-    <section class="card" aria-label="収集日">
+    <section class="card" aria-label="収集日" data-i-aria="daysCard">
       <div class="days" id="days"></div>
-      <p class="deadline">収集日の朝 8:30 までに出してください。</p>
-      <div class="week" id="week" aria-label="1週間の予定"></div>
-      <button class="cal-open" id="openCal">1か月のカレンダーを見る</button>
+      <p class="deadline" data-i="deadline">収集日の朝 8:30 までに出してください。</p>
+      <div class="week" id="week" aria-label="1週間の予定" data-i-aria="week"></div>
+      <button class="cal-open" id="openCal" data-i="openCal">1か月のカレンダーを見る</button>
     </section>
 
-    <label class="search-label" for="q">捨て方を調べる</label>
+    <label class="search-label" for="q" data-i="searchLabel">捨て方を調べる</label>
     <div class="search" id="searchBox">
-      <input id="q" type="search" placeholder="品目を入力（例：傘、電池）" autocomplete="off" enterkeyhint="search">
-      <button class="clear" id="clear" aria-label="入力を消す">×</button>
+      <input id="q" type="search" placeholder="品目を入力（例：傘、電池）" autocomplete="off" enterkeyhint="search" data-i-ph="q">
+      <button class="clear" id="clear" aria-label="入力を消す" data-i-aria="clear">×</button>
     </div>
 
     <div id="home">
       <div id="chips"></div>
-      <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日">
-        <h2>種類ごとの次の収集日</h2>
+      <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日" data-i-aria="kindsTitle">
+        <h2 data-i="kindsTitle">種類ごとの次の収集日</h2>
         <div id="kinds"></div>
       </section>
-      <section class="card help" aria-label="困ったときは">
-        <h2>困ったときは</h2>
+      <section class="card help" aria-label="困ったときは" data-i-aria="help">
+        <h2 data-i="help">困ったときは</h2>
         <div id="office"></div>
-        <ul class="tips">
+        <ul class="tips" data-i="tips">
           <li><strong>出す場所</strong>：一戸建ては近くのごみ集積所（場所は近所の方へ）、マンション・アパートは建物のごみ置き場（家主・管理会社へ）。</li>
           <li><strong>引っ越しなどで大量に出るごみ</strong>は収集しません。自分で市の処理施設に持ち込むか、市の許可業者に頼んでください。</li>
           <li><strong>小型家電</strong>（縦15×横30×奥行40cmの投入口に入るもの）は、区役所1階などの回収ボックスにも入れられます。</li>
           <li><strong>充電式電池・モバイルバッテリー</strong>は、区役所の充電式電池回収ボックスにも入れられます（破損・膨張していないもの）。</li>
           <li><strong>紙パック</strong>は、できるだけスーパーなどの店頭回収へ。難しい場合は可燃ごみです。</li>
         </ul>
-        <p class="more-link"><a href="https://www.city.hiroshima.lg.jp/faq/gomi-kankyo/index.html" target="_blank" rel="noopener">市の「よくある質問と回答」を見る</a></p>
+        <p class="more-link"><a data-i="cityFaq" href="https://www.city.hiroshima.lg.jp/faq/gomi-kankyo/index.html" target="_blank" rel="noopener">市の「よくある質問と回答」を見る</a></p>
       </section>
-      <section class="card share" aria-label="この地域のリンク">
-        <h2>この地域のリンク</h2>
-        <p>ご家族や町内の方に送ると、開いた人もすぐにこの地域の収集日を見られます。</p>
-        <button class="link-btn" id="share">リンクを送る</button>
+      <section class="card share" aria-label="この地域のリンク" data-i-aria="shareTitle">
+        <h2 data-i="shareTitle">この地域のリンク</h2>
+        <p data-i="shareText">ご家族や町内の方に送ると、開いた人もすぐにこの地域の収集日を見られます。</p>
+        <button class="link-btn" id="share" data-i="share">リンクを送る</button>
       </section>
     </div>
     <div class="results" id="results"></div>
@@ -297,16 +301,16 @@
 
   <!-- 月のカレンダー -->
   <main id="calView" hidden>
-    <button class="back" id="closeCal">← 戻る</button>
+    <button class="back" id="closeCal" data-i="back">← 戻る</button>
     <section class="card">
       <div class="cal-head">
-        <button class="cal-nav" id="calPrev" aria-label="前の月">‹</button>
+        <button class="cal-nav" id="calPrev" aria-label="前の月" data-i-aria="prevMonth">‹</button>
         <h2 id="calTitle"></h2>
-        <button class="cal-nav" id="calNext" aria-label="次の月">›</button>
+        <button class="cal-nav" id="calNext" aria-label="次の月" data-i-aria="nextMonth">›</button>
       </div>
       <div class="cal" id="cal"></div>
       <div class="legend" id="legend"></div>
-      <p class="cal-note">ペットボトルはリサイクルプラと同じ日、有害ごみは資源ごみと同じ日です。大型ごみは予約した場合のみ収集されます。</p>
+      <p class="cal-note" data-i="calNote">ペットボトルはリサイクルプラと同じ日、有害ごみは資源ごみと同じ日です。大型ごみは予約した場合のみ収集されます。</p>
     </section>
   </main>
 
@@ -315,7 +319,7 @@
   <!-- よくある質問：Google の検索候補・市の「よくある質問と回答」・Yahoo!知恵袋で多かった疑問から。
        答えは市HP「家庭ごみの正しい出し方」などで確認（2026-10-19）。祝日の日付は毎年4月に更新する -->
   <details class="card faq">
-    <summary>よくある質問</summary>
+    <summary data-i="faq">よくある質問</summary>
     <details class="q"><summary>ペットボトルは何曜日に出す？</summary><div class="a">
       <p>週1回、リサイクルプラと同じ日です。曜日は町によって違うので、このページで町名を選ぶと表示されます。</p>
       <p>キャップとラベルをはずし、中を水洗いしてつぶして出します。リサイクルプラとは袋を分けてください。</p>
@@ -383,10 +387,10 @@
   </details>
 
   <footer>
-    このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。<br>
-    データ出典：<a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">広島市 家庭ごみ収集・分別情報（オープンデータ）</a><span id="range"></span>
-    <br>上記データ（<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>）を加工して作成しています。
-    <br>利用状況を知るため、Cloudflare Web Analytics でアクセス数を集計しています（個人を特定する情報は集めていません）。
+    <span data-i="unofficial">このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。</span><br>
+    <span data-i="source">データ出典：<a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">広島市 家庭ごみ収集・分別情報（オープンデータ）</a></span><span id="range"></span>
+    <br><span data-i="license">上記データ（<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>）を加工して作成しています。</span>
+    <br><span data-i="analytics">利用状況を知るため、Cloudflare Web Analytics でアクセス数を集計しています（個人を特定する情報は集めていません）。</span>
   </footer>
 </div>
 
@@ -419,7 +423,12 @@
 
   // 大型ごみの予約（市HP「大型ごみ収集の予約・排出方法」より）
   const RESERVE_URL = "https://ogatagomi.city.hiroshima.lg.jp/eco/view/hiroshima/top.html";
-  const reserveBox = () => `<div class="reserve">
+  const reserveBox = () => isEn() ? `<div class="reserve">
+    <a class="btn" href="${RESERVE_URL}" target="_blank" rel="noopener">Reserve online (24 hours, Japanese)</a>
+    <p>Phone: <a class="tel" href="tel:0570082530">0570-082530</a> or <a class="tel" href="tel:0825445300">082-544-5300</a> (weekdays 9:00–18:00, Japanese)</p>
+    <p>Deadline: 5 days before collection online, 3 days by phone (not counting Saturdays, Sundays and holidays)</p>
+    <p>Bringing it yourself is free: Asaminami Plant, Large-sized Waste Crushing Facility (3990 Tomokita 4-chome, Asaminami-ku / 082-848-1114). Closed on Saturdays, Sundays, holidays, the New Year period and August 6.</p>
+  </div>` : `<div class="reserve">
     <a class="btn" href="${RESERVE_URL}" target="_blank" rel="noopener">インターネットで予約する（24時間）</a>
     <p>電話：<a class="tel" href="tel:0570082530">0570-082530</a> または <a class="tel" href="tel:0825445300">082-544-5300</a>（平日 9時〜18時）</p>
     <p>締め切り：インターネットは収集日の5日前、電話は3日前まで（土日祝を除いて数えます）</p>
@@ -427,7 +436,15 @@
   </div>`;
 
   // 家電リサイクル法の対象機器（市HP「よくある質問と回答」より）
-  const kadenBox = () => `<div class="reserve">
+  const kadenBox = () => isEn() ? `<div class="reserve">
+    <p><strong>There are 3 ways to dispose of it.</strong></p>
+    <p>1. Have the store where you buy the new one, or where you bought it, take it back</p>
+    <p>2. Buy a home appliance recycling ticket at a post office (pays the recycling fee) and bring it to a designated site yourself (no reservation needed)<br>
+      ・Okayama Kenkamotsu Unso, Hiroshima Branch (4-10-202 Kannon-shinmachi, Nishi-ku / 082-297-2411)<br>
+      ・Seino Transportation, Hiroshima Branch (6-2-15 Konan, Naka-ku / 082-545-9071)</p>
+    <p>3. Ask the city to collect it (a collection fee of 3,000 yen per unit in addition to the recycling fee; apply to the Large-sized Waste Reception Center, 0570-082530)</p>
+    <p>To buy a recycling ticket, you need the maker's name, plus the screen size (inches) for TVs or the capacity (liters) for refrigerators and freezers.</p>
+  </div>` : `<div class="reserve">
     <p><strong>処分のしかたは3通りあります。</strong></p>
     <p>1. 買い替える店、または購入した店に引き取ってもらう</p>
     <p>2. 郵便局で家電リサイクル券を買ってリサイクル料金を払い、自分で指定の場所に持ち込む（予約不要）<br>
@@ -454,8 +471,177 @@
   const HISTORY_KEY = "gominavi.history";
   const HISTORY_MAX = 10;
 
+  // ---- 英語表記 ----
+  // 品目名・出し方（市のデータ）と「よくある質問」の本文は日本語のまま。画面の文言だけを訳す
+  const LANG_KEY = "gominavi.lang";
+  let lang = "ja";
+  try { lang = localStorage.getItem(LANG_KEY) || (/^ja\b/i.test(navigator.language || "ja") ? "ja" : "en"); } catch {}
+  if (lang !== "en") lang = "ja";
+  const isEn = () => lang === "en";
+
+  const EN = {
+    kinds: {
+      k: ["Combustible waste", "Comb."],
+      r: ["Recyclable plastics & PET bottles", "R-Plas"],
+      p: ["Other plastics", "O-Plas"],
+      s: ["Recyclables & hazardous waste", "Recyc."],
+      f: ["Non-combustible waste", "Non-C"],
+      o: ["Large-sized waste (reservation required)", "Large"],
+    },
+    cats: {
+      "可燃ごみ": "Combustible waste", "リサイクルプラ": "Recyclable plastics", "ペットボトル": "PET bottles",
+      "その他プラ": "Other plastics", "資源ごみ": "Recyclables", "有害ごみ": "Hazardous waste",
+      "不燃ごみ": "Non-combustible waste", "大型ごみ": "Large-sized waste",
+      "家電リサイクル": "Home appliance recycling", "市では収集しない": "Not collected by the city",
+    },
+    tips: {
+      "ペットボトル": "Put them out on the same day as recyclable plastics, in a separate bag.",
+      "有害ごみ": "Put them out on the same day as recyclables, in a separate bag marked \"有害\" (hazardous).",
+    },
+    wards: {
+      naka: "Naka Ward", higashi: "Higashi Ward", minami: "Minami Ward", nishi: "Nishi Ward",
+      asaminami: "Asaminami Ward", asakita: "Asakita Ward", aki: "Aki Ward", saeki: "Saeki Ward",
+    },
+    offices: {
+      "中環境事業所": "Naka Environmental Office", "南環境事業所": "Minami Environmental Office",
+      "西環境事業所": "Nishi Environmental Office", "安佐南環境事業所": "Asaminami Environmental Office",
+      "安佐北環境事業所": "Asakita Environmental Office", "安芸環境事業所": "Aki Environmental Office",
+      "佐伯環境事業所": "Saeki Environmental Office",
+    },
+    popular: ["Batteries", "Power banks", "Umbrella", "Spray cans", "Frying pan", "PET bottles", "Shoes", "Futon", "Fluorescent lamps", "Books"],
+    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    monthsLong: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    week: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    // HTMLに直接書いてある文言（data-i / data-i-ph / data-i-aria のキー）
+    html: {
+      title: "Gomi Navi",
+      changeArea: "Change",
+      pickWard: "Select<br>your ward",
+      savedLocal: "Your area is saved only on this device.",
+      backWard: "← Choose another ward",
+      townQ: "Filter by town name (romaji OK)",
+      daysCard: "Collection days",
+      deadline: "Put garbage out by 8:30 a.m. on collection day.",
+      week: "This week's schedule",
+      openCal: "View monthly calendar",
+      searchLabel: "How to dispose of an item",
+      q: "Search items (e.g. umbrella)",
+      clear: "Clear",
+      kindsTitle: "Next collection day by type",
+      help: "Need help?",
+      tips: `<li><strong>Where to put it out</strong>: Houses use the nearby collection point (ask your neighbors). Apartments use the building's garbage area (ask your landlord or management company).</li>
+          <li><strong>Large amounts of garbage</strong> (e.g. when moving) are not collected. Take it to a city facility yourself or hire a city-licensed company.</li>
+          <li><strong>Small home appliances</strong> that fit a 15 × 30 × 40 cm slot can also go in collection boxes on the 1st floor of ward offices.</li>
+          <li><strong>Rechargeable batteries and power banks</strong> (not damaged or swollen) can also go in the battery collection boxes at ward offices.</li>
+          <li><strong>Paper drink cartons</strong>: please use in-store collection at supermarkets. If not possible, put them out as combustible waste.</li>`,
+      cityFaq: "City FAQ (Japanese)",
+      shareTitle: "Link to this area",
+      shareText: "Send it to family or neighbors. They can see this area's collection days right away.",
+      share: "Share link",
+      back: "← Back",
+      prevMonth: "Previous month",
+      nextMonth: "Next month",
+      calNote: "PET bottles are collected with recyclable plastics, and hazardous waste with recyclables. Large-sized waste is collected only with a reservation.",
+      faq: "FAQ (Japanese only)",
+      unofficial: `This app is not an official service of Hiroshima City. For the latest information, or if you are unsure, please check the <a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">Hiroshima City website</a> (Japanese).`,
+      source: `Data: <a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">Hiroshima City household waste collection and sorting data (open data)</a>`,
+      license: `Created by processing the above data (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>).`,
+      analytics: "We count page views with Cloudflare Web Analytics to understand usage (no personally identifiable information is collected).",
+    },
+  };
+
+  // 画面ごとに組み立てる文言
+  const TXT = {
+    ja: {
+      loadError: "データを読み込めませんでした。通信環境を確認して、もう一度開いてください。",
+      linkNotFound: "リンクの地域が見つかりませんでした。お手数ですが地域を選んでください。",
+      townLead: (w) => `${esc(w)}の町名を<br>選んでください`,
+      noTown: "見つかりませんでした",
+      kanaRow: (r) => r === "他" ? "その他" : r + "行",
+      today: "今日", tomorrow: "明日", dayAfter: "あさって",
+      until: (n) => n === 0 ? "今日" : n === 1 ? "明日" : n === 2 ? "あさって" : `${n}日後`,
+      noCollection: "収集なし",
+      sharedArea: (a) => `リンクで送られた地域（${esc(a)}）を表示しています。`,
+      keepArea: "この地域を保存する",
+      backMine: (t) => `${esc(t)}に戻る`,
+      expired: "収集日データの期限が切れています。新しい年度のデータに更新されるまで、市のホームページでご確認ください。",
+      reserveHere: "予約はこちら",
+      office: (name, tel) => `ごみが収集されていない、分別がわからないときは<br>
+        <strong>${esc(name)}</strong> ${tel}<br>
+        <small>平日 8:30〜17:15。収集されていないときは当日17:15までに連絡してください。</small>`,
+      recent: "最近調べたもの", clearHistory: "履歴を消す",
+      see: (b) => `${b}の項目をご覧ください。`,
+      largeDay: "この地区の大型ごみの日", next: "次の収集日", outOfRange: "データの範囲外です",
+      batteryTip: "電池は、端子部分をテープで覆ってから出してください（ショートによる発火を防ぐため）。",
+      notFound: (q) => `「${esc(q)}」は見つかりませんでした。`,
+      near: "近い品目：", tryOther: "別の言い方や、素材（プラスチック、金属など）でもお試しください。",
+      more: (n) => `ほか ${n} 件あります。もう少し詳しく入力してください。`,
+      calTitle: (y, m) => `${y}年${m + 1}月`,
+      calDay: (m, d) => `${m + 1}月${d}日`,
+      shareTitle: (a) => `広島市ゴミナビ（${a}）`, shareText: (t) => `${t}のごみ収集日`,
+      copied: "リンクをコピーしました", copyPrompt: "このリンクをコピーしてください",
+    },
+    en: {
+      loadError: "Could not load the data. Please check your connection and open the page again.",
+      linkNotFound: "The area in the link was not found. Please select your area.",
+      townLead: (w) => `Select your town<br>in ${esc(w)}`,
+      noTown: "No matching town",
+      kanaRow: (r) => r === "他" ? "Other" : ({ あ: "A", か: "Ka", さ: "Sa", た: "Ta", な: "Na", は: "Ha", ま: "Ma", や: "Ya", ら: "Ra", わ: "Wa" })[r],
+      today: "Today", tomorrow: "Tomorrow", dayAfter: "Day after tomorrow",
+      until: (n) => n === 0 ? "Today" : n === 1 ? "Tomorrow" : `In ${n} days`,
+      noCollection: "No collection",
+      sharedArea: (a) => `Showing the area from a shared link (${esc(a)}).`,
+      keepArea: "Save this area",
+      backMine: (t) => `Back to ${esc(t)}`,
+      expired: "The collection schedule data has expired. Until it is updated for the new fiscal year, please check the city website.",
+      reserveHere: "Make a reservation",
+      office: (name, tel) => `If your garbage was not collected, or you are unsure how to sort something:<br>
+        <strong>${esc(name)}</strong> ${tel}<br>
+        <small>Weekdays 8:30–17:15 (Japanese). If garbage was not collected, call by 17:15 the same day.</small>`,
+      recent: "Recent searches", clearHistory: "Clear history",
+      see: (b) => `See ${b}.`,
+      largeDay: "Large-sized waste day in this area", next: "Next collection", outOfRange: "Out of data range",
+      batteryTip: "Cover the battery terminals with tape before putting them out (to prevent fire from short circuits).",
+      notFound: (q) => `No results for "${esc(q)}".`,
+      near: "Similar items:", tryOther: "Item names are in Japanese. Try another word or a material (プラスチック: plastic, 金属: metal).",
+      more: (n) => `${n} more results. Try a more specific word.`,
+      calTitle: (y, m) => `${EN.monthsLong[m]} ${y}`,
+      calDay: (m, d) => `${EN.months[m]} ${d}`,
+      shareTitle: (a) => `Hiroshima Gomi Navi (${a})`, shareText: (t) => `Garbage collection days in ${t}`,
+      copied: "Link copied", copyPrompt: "Copy this link",
+    },
+  };
+  const L = () => TXT[lang];
+  const kindName = (key) => isEn() ? EN.kinds[key][0] : KINDS[key].name;
+  const kindShort = (key) => isEn() ? EN.kinds[key][1] : KINDS[key].short;
+  const wardName = (code, ja) => isEn() ? EN.wards[code] || ja : ja;
+  // 町名IDのローマ字を読みやすくする（kamiyachou1choume → Kamiyacho 1-chome）
+  const romaji = (id) => id.replace(/(\d+)choume/g, " $1-chome").replace(/ou/g, "o").replace(/uu/g, "u").replace(/oo/g, "o").replace(/aa/g, "a")
+    .replace(/(^|-)([a-z])/g, (m, p, c) => p + c.toUpperCase()).trim();
+  const townLabel = (a) => isEn() ? romaji(a.id) : a.town;
+  const areaLabel = (a) => isEn() ? `${romaji(a.id)}, ${wardName(a.ward, a.wardName)}` : `${a.wardName} ${a.town}`;
+
+  // HTMLの固定文言を切り替える（日本語は最初に読み取って覚えておく）
+  const JA_HTML = {};
+  function applyStatic() {
+    document.documentElement.lang = lang;
+    for (const [attr, set, get] of [
+      ["data-i", (el, v) => { el.innerHTML = v; }, (el) => el.innerHTML],
+      ["data-i-ph", (el, v) => { el.placeholder = v; }, (el) => el.placeholder],
+      ["data-i-aria", (el, v) => el.setAttribute("aria-label", v), (el) => el.getAttribute("aria-label")],
+    ]) {
+      document.querySelectorAll(`[${attr}]`).forEach((el) => {
+        const key = `${attr}:${el.getAttribute(attr)}:${el.tagName}`;
+        if (!(key in JA_HTML)) JA_HTML[key] = get(el);
+        set(el, isEn() ? EN.html[el.getAttribute(attr)] : JA_HTML[key]);
+      });
+    }
+    $("lang").textContent = isEn() ? "日本語" : "English";
+    $("lang").lang = isEn() ? "ja" : "en";
+  }
+
   const $ = (id) => document.getElementById(id);
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const esc =(s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const getJSON = (path) => fetch(path).then((r) => { if (!r.ok) throw new Error(path); return r.json(); });
 
   const store = {
@@ -501,20 +687,22 @@
       const { wards } = await loadWards();
       const byCode = Object.fromEntries(wards.map((w) => [w.code, w]));
       $("wards").innerHTML = WARD_ORDER.filter((c) => byCode[c])
-        .map((c) => `<button class="ward" data-ward="${c}">${esc(byCode[c].name)}</button>`).join("");
-    } catch { showError("データを読み込めませんでした。通信環境を確認して、もう一度開いてください。"); }
+        .map((c) => `<button class="ward" data-ward="${c}">${esc(wardName(c, byCode[c].name))}</button>`).join("");
+    } catch { showError(L().loadError); }
   }
 
+  let townWard = null; // 町名を選んでいる区（言語の切り替えで描き直すため）
   async function openTowns(code) {
+    townWard = code;
     const { wards } = await loadWards();
     const ward = wards.find((w) => w.code === code);
     $("stepWard").hidden = true; $("stepTown").hidden = false;
-    $("wardTitle").textContent = ward.name;
+    $("townLead").innerHTML = L().townLead(wardName(code, ward.name));
     $("townQ").value = "";
     const render = () => {
       const q = norm($("townQ").value);
-      const list = ward.towns.filter((t) => !q || norm(t.n).includes(q) || norm(t.y).includes(q));
-      if (!list.length) { $("towns").innerHTML = `<p class="empty">見つかりませんでした</p>`; return; }
+      const list = ward.towns.filter((t) => !q || norm(t.n).includes(q) || norm(t.y).includes(q) || norm(romaji(t.id)).includes(q));
+      if (!list.length) { $("towns").innerHTML = `<p class="empty">${L().noTown}</p>`; return; }
       // 読みの頭文字で「あ行・か行…」に分ける
       const rowOf = (y) => {
         const c = norm(y)[0] || "";
@@ -527,10 +715,10 @@
         const row = rowOf(t.y);
         if (row !== cur) {
           if (cur !== null) html += "</div>";
-          html += `<div class="kana">${row === "他" ? "その他" : row + "行"}</div><div class="town-group">`;
+          html += `<div class="kana">${L().kanaRow(row)}</div><div class="town-group">`;
           cur = row;
         }
-        html += `<button class="town" data-town="${esc(t.n)}">${esc(t.n)}</button>`;
+        html += `<button class="town" data-town="${esc(t.n)}">${esc(t.n)}${isEn() ? `<small lang="en">${esc(romaji(t.id))}</small>` : ""}</button>`;
       }
       $("towns").innerHTML = html + "</div>";
     };
@@ -560,8 +748,9 @@
   const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const fromYmd = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
-  const md = (d) => `${d.getMonth() + 1}月${d.getDate()}日（${WEEK[d.getDay()]}）`;
-  const mdShort = (d) => `${d.getMonth() + 1}/${d.getDate()}（${WEEK[d.getDay()]}）`;
+  const md = (d) => isEn() ? `${EN.week[d.getDay()]}, ${EN.months[d.getMonth()]} ${d.getDate()}` : `${d.getMonth() + 1}月${d.getDate()}日（${WEEK[d.getDay()]}）`;
+  const mdShort = (d) => isEn() ? `${d.getMonth() + 1}/${d.getDate()} (${EN.week[d.getDay()]})` : `${d.getMonth() + 1}/${d.getDate()}（${WEEK[d.getDay()]}）`;
+  const weekday = (i) => (isEn() ? EN.week : WEEK)[i];
 
   // ---- メイン ----
   let S = null; // { area, sched, start, end, items }
@@ -594,7 +783,7 @@
 
   function untilLabel(d) {
     const n = Math.round((d - clock().today) / DAY);
-    return n === 0 ? "今日" : n === 1 ? "明日" : n === 2 ? "あさって" : `${n}日後`;
+    return L().until(n);
   }
 
   // temporary: 共有リンクで別の地域を開いたとき（保存している地域は上書きしない）
@@ -602,14 +791,14 @@
     if (!area) return openSetup();
     $("setup").hidden = true; $("error").hidden = true; $("calView").hidden = true;
     $("areaBox").hidden = false;
-    $("areaName").textContent = `${area.wardName} ${area.town}`;
+    $("areaName").textContent = isEn() ? townLabel(area) : areaLabel(area); // 英語は長くなるので町名だけ
     try {
       const [wardData, items] = await Promise.all([getJSON(`data/${area.ward}.json`), S?.items || getJSON("data/items.json")]);
       const sched = wardData.groups[area.group];
       if (!sched) return openSetup(); // 年度替わりでグループが無くなった場合は選び直し
       S = { area, temporary, sched, oSet: new Set(sched.o), start: fromYmd(wardData.start), end: fromYmd(wardData.end), items };
       $("range").textContent = `（${wardData.start.replace(/-/g, "/")}〜${wardData.end.replace(/-/g, "/")}）`;
-    } catch { return showError("データを読み込めませんでした。通信環境を確認して、もう一度開いてください。"); }
+    } catch { return showError(L().loadError); }
     buildIndex();
     $("main").hidden = false;
     $("q").value = "";
@@ -622,52 +811,51 @@
     const { today, pastDeadline } = clock();
     const mine = store.get();
     $("banner").innerHTML = (S.temporary && mine
-      ? `<div class="banner">リンクで送られた地域（${esc(S.area.wardName)} ${esc(S.area.town)}）を表示しています。
-          <div class="actions"><button class="primary" id="keepArea">この地域を保存する</button>
-          <button id="backMine">${esc(mine.town)}に戻る</button></div></div>`
+      ? `<div class="banner">${L().sharedArea(areaLabel(S.area))}
+          <div class="actions"><button class="primary" id="keepArea">${L().keepArea}</button>
+          <button id="backMine">${L().backMine(townLabel(mine))}</button></div></div>`
       : "")
       + (today > S.end
-      ? `<div class="banner">収集日データの期限が切れています。新しい年度のデータに更新されるまで、市のホームページでご確認ください。</div>`
+      ? `<div class="banner">${L().expired}</div>`
       : "");
 
     const day = (label, d) => {
       const ks = kindsOn(d);
       if (!ks.length) {
-        return `<div class="day"><div class="label">${label}</div><div class="date">${md(d)}</div><div class="none">収集なし</div></div>`;
+        return `<div class="day"><div class="label">${label}</div><div class="date">${md(d)}</div><div class="none">${L().noCollection}</div></div>`;
       }
       return `<div class="day" style="border-left-color:${KINDS[ks[0]].color}">
         <div class="label">${label}</div><div class="date">${md(d)}</div>
-        ${ks.map((k) => `<div class="kind" style="color:${KINDS[k].color}">${esc(KINDS[k].name)}</div>`).join("")}
+        ${ks.map((k) => `<div class="kind" style="color:${KINDS[k].color}">${esc(kindName(k))}</div>`).join("")}
       </div>`;
     };
     // 8:30を過ぎたら今日の分は出せないので、明日・あさってを表示（前の晩に見る想定）
     $("days").innerHTML = pastDeadline
-      ? day("明日", addDays(today, 1)) + day("あさって", addDays(today, 2))
-      : day("今日", today) + day("明日", addDays(today, 1));
+      ? day(L().tomorrow, addDays(today, 1)) + day(L().dayAfter, addDays(today, 2))
+      : day(L().today, today) + day(L().tomorrow, addDays(today, 1));
 
     let w = "";
     for (let i = 0; i < 7; i++) {
       const d = addDays(today, i);
       const ks = kindsOn(d);
       const cls = ["wd", i === 0 && "today", d.getDay() === 0 && "sun", d.getDay() === 6 && "sat"].filter(Boolean).join(" ");
-      const label = ks.map((k) => KINDS[k].name).join("・") || "収集なし";
-      w += `<div class="${cls}" aria-label="${md(d)} ${esc(label)}"><div class="w">${WEEK[d.getDay()]}</div>
+      const label = ks.map(kindName).join(isEn() ? ", " : "・") || L().noCollection;
+      w += `<div class="${cls}" aria-label="${md(d)} ${esc(label)}"><div class="w">${weekday(d.getDay())}</div>
         <div class="d">${d.getDate()}</div>
-        <div class="t">${ks.map((k) => `<div style="color:${KINDS[k].color}">${KINDS[k].short}</div>`).join("") || "<span style='color:var(--sub)'>－</span>"}</div></div>`;
+        <div class="t">${ks.map((k) => `<div style="color:${KINDS[k].color}">${kindShort(k)}</div>`).join("") || "<span style='color:var(--sub)'>－</span>"}</div></div>`;
     }
     $("week").innerHTML = w;
 
     $("kinds").innerHTML = Object.entries(KINDS).map(([key, k]) => {
       const d = nextDate(key);
-      const rsv = key === "o" ? `<a class="rsv" href="${RESERVE_URL}" target="_blank" rel="noopener">予約はこちら</a>` : "";
-      return `<div class="kind-row"><span class="bar" style="background:${k.color}"></span><span class="n">${esc(k.name)}${rsv}</span>
+      const rsv = key === "o" ? `<a class="rsv" href="${RESERVE_URL}" target="_blank" rel="noopener">${L().reserveHere}</a>` : "";
+      return `<div class="kind-row"><span class="bar" style="background:${k.color}"></span><span class="n">${esc(kindName(key))}${rsv}</span>
         <span class="d">${d ? `${mdShort(d)}<small>${untilLabel(d)}</small>` : "－"}</span></div>`;
     }).join("");
 
     const [oName, oTel] = OFFICES[S.area.ward] || [];
-    $("office").innerHTML = oName ? `<p class="office">ごみが収集されていない、分別がわからないときは<br>
-      <strong>${esc(oName)}</strong> <a class="tel" href="tel:${oTel.replace(/-/g, "")}">${oTel}</a><br>
-      <small>平日 8:30〜17:15。収集されていないときは当日17:15までに連絡してください。</small></p>` : "";
+    $("office").innerHTML = oName ? `<p class="office">${L().office(isEn() ? EN.offices[oName] || oName : oName,
+      `<a class="tel" href="tel:${oTel.replace(/-/g, "")}">${oTel}</a>`)}</p>` : "";
 
     renderChips();
   }
@@ -691,10 +879,11 @@
   // 調べたことがあれば履歴を、初めてならよく調べられる品目を表示
   function renderChips() {
     const list = recent.get();
-    const chips = (arr) => `<div class="chips">${arr.map((p) => `<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join("")}</div>`;
+    // labels：英語表示のときのボタンの文字（検索は日本語の品目名で行う）
+    const chips = (arr, labels = arr) => `<div class="chips">${arr.map((p, i) => `<button class="chip" data-q="${esc(p)}">${esc(labels[i])}</button>`).join("")}</div>`;
     $("chips").innerHTML = list.length
-      ? `<div class="chips-head"><span>最近調べたもの</span><button id="clearHistory">履歴を消す</button></div>${chips(list)}`
-      : chips(POPULAR);
+      ? `<div class="chips-head"><span>${L().recent}</span><button id="clearHistory">${L().clearHistory}</button></div>${chips(list)}`
+      : chips(POPULAR, isEn() ? EN.popular : POPULAR);
   }
 
   // ---- 品目検索 ----
@@ -716,6 +905,9 @@
     ["台所ごみ", "生ごみ"], ["残飯", "生ごみ"],
     // 1文字の言葉は、入力と完全に同じときだけ使う
     ["薬", "くすり"],
+    // 英語表示のよく使う品目は英語でも探せるようにする
+    ...EN.popular.map((en, i) => [en, POPULAR[i]]),
+    ["battery", "電池"], ["power bank", "モバイルバッテリー"], ["spray can", "スプレー缶"], ["shoe", "靴"], ["book", "本"], ["pet bottle", "ペットボトル"],
   ].map(([from, to]) => [norm(from), to]);
 
   // 「靴(運動靴・…)」のような括弧前の部分を見出し語として優先する
@@ -775,7 +967,7 @@
   function itemCard(it) {
     if (it.ref) {
       return `<div class="result"><h3>${esc(it.n)}</h3>
-        <p class="how"><button class="ref" data-q="${esc(it.ref)}">「${esc(it.ref)}」</button>の項目をご覧ください。</p></div>`;
+        <p class="how">${L().see(`<button class="ref" data-q="${esc(it.ref)}">「${esc(it.ref)}」</button>`)}</p></div>`;
     }
     const c = CATS[it.c] || {};
     const k = c.kind ? KINDS[c.kind] : null;
@@ -785,18 +977,18 @@
     if (k) {
       const d = nextDate(c.kind);
       // 大型ごみは予約の締め切りがあるので「出せる日」ではなく地区の収集日として示す
-      const label = c.kind === "o" ? "この地区の大型ごみの日" : "次の収集日";
+      const label = c.kind === "o" ? L().largeDay : L().next;
       next = d
         ? `<div class="next"><span class="t">${label}</span><span class="v">${md(d)}</span><span class="in">${untilLabel(d)}</span></div>`
-        : `<div class="next"><span class="t">${label}</span><span class="v">データの範囲外です</span></div>`;
+        : `<div class="next"><span class="t">${label}</span><span class="v">${L().outOfRange}</span></div>`;
     }
     return `<div class="result">
       <h3>${esc(it.n)}</h3>
-      <span class="tag" style="background:${color}">${esc(it.c)}</span>
+      <span class="tag" style="background:${color}">${esc(isEn() ? EN.cats[it.c] || it.c : it.c)}</span>
       ${it.h ? `<p class="how">${esc(it.h)}</p>` : ""}
       ${it.note ? `<p class="note">※ ${esc(it.note.replace(/^※\s*/, ""))}</p>` : ""}
-      ${c.tip && !/同じ日/.test(it.h || "") ? `<p class="tip">${esc(c.tip)}</p>` : ""}
-      ${/電池|バッテリー/.test(it.n) && it.c === "有害ごみ" && !/テープ/.test(it.h || "") ? `<p class="tip">電池は、端子部分をテープで覆ってから出してください（ショートによる発火を防ぐため）。</p>` : ""}
+      ${c.tip && !/同じ日/.test(it.h || "") ? `<p class="tip">${esc(isEn() ? EN.tips[it.c] : c.tip)}</p>` : ""}
+      ${/電池|バッテリー/.test(it.n) && it.c === "有害ごみ" && !/テープ/.test(it.h || "") ? `<p class="tip">${L().batteryTip}</p>` : ""}
       ${c.reserve ? reserveBox() : ""}
       ${c.kaden ? kadenBox() : ""}
       ${next}
@@ -817,14 +1009,14 @@
     if (hits.length) saveTimer = setTimeout(() => recent.add(q), 2000);
     if (!hits.length) {
       const near = suggest(q).slice(0, 8);
-      $("results").innerHTML = `<div class="empty">「${esc(q)}」は見つかりませんでした。<br>
-        <small>${near.length ? "近い品目：" : "別の言い方や、素材（プラスチック、金属など）でもお試しください。"}</small>
+      $("results").innerHTML = `<div class="empty">${L().notFound(q)}<br>
+        <small>${near.length ? L().near : L().tryOther}</small>
         ${near.length ? `<div class="chips" style="justify-content:center">${near.map((it) =>
           `<button class="chip" data-q="${esc(it.n)}">${esc(it.n)}</button>`).join("")}</div>` : ""}</div>`;
       return;
     }
     $("results").innerHTML = hits.slice(0, LIMIT).map(itemCard).join("")
-      + (hits.length > LIMIT ? `<p class="more">ほか ${hits.length - LIMIT} 件あります。もう少し詳しく入力してください。</p>` : "");
+      + (hits.length > LIMIT ? `<p class="more">${L().more(hits.length - LIMIT)}</p>` : "");
   }
 
   function setQuery(q) {
@@ -840,24 +1032,25 @@
   function renderCal() {
     const { today } = clock();
     const y = calMonth.getFullYear(), m = calMonth.getMonth();
-    $("calTitle").textContent = `${y}年${m + 1}月`;
+    $("calTitle").textContent = L().calTitle(y, m);
     const first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate();
-    let html = WEEK.map((w, i) => `<div class="h${i === 0 ? " sun" : i === 6 ? " sat" : ""}">${w}</div>`).join("");
+    let html = WEEK.map((w, i) => `<div class="h${i === 0 ? " sun" : i === 6 ? " sat" : ""}">${weekday(i)}</div>`).join("");
     html += `<div class="c blank"></div>`.repeat(first.getDay());
     for (let d = 1; d <= days; d++) {
       const date = new Date(y, m, d);
       const ks = kindsOn(date);
       const cls = ["c", date < today && "past", +date === +today && "today", date.getDay() === 0 && "sun", date.getDay() === 6 && "sat"].filter(Boolean).join(" ");
-      const label = ks.map((k) => KINDS[k].name).join("・") || "収集なし";
-      html += `<div class="${cls}" aria-label="${m + 1}月${d}日 ${esc(label)}"><div class="n">${d}</div>
-        <div class="t">${ks.map((k) => `<div style="color:${KINDS[k].color}">${KINDS[k].short}</div>`).join("")}</div></div>`;
+      const label = ks.map(kindName).join(isEn() ? ", " : "・") || L().noCollection;
+      html += `<div class="${cls}" aria-label="${L().calDay(m, d)} ${esc(label)}"><div class="n">${d}</div>
+        <div class="t">${ks.map((k) => `<div style="color:${KINDS[k].color}">${kindShort(k)}</div>`).join("")}</div></div>`;
     }
     $("cal").innerHTML = html;
     // データのある範囲（年度）だけ移動できる
     $("calPrev").disabled = new Date(y, m, 0) < S.start;
     $("calNext").disabled = new Date(y, m + 1, 1) > S.end;
+    $("legend").innerHTML = Object.entries(KINDS).map(([key, k]) =>
+      `<span><i style="background:${k.color}"></i>${kindShort(key)}${isEn() ? ": " : "："}${esc(kindName(key))}</span>`).join("");
   }
-  $("legend").innerHTML = Object.values(KINDS).map((k) => `<span><i style="background:${k.color}"></i>${k.short}：${esc(k.name)}</span>`).join("");
   $("openCal").addEventListener("click", () => {
     const { today } = clock();
     calMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -878,16 +1071,16 @@
 
   $("share").addEventListener("click", async () => {
     const url = areaUrl(S.area);
-    const title = `広島市ゴミナビ（${S.area.wardName} ${S.area.town}）`;
+    const title = L().shareTitle(areaLabel(S.area));
     if (navigator.share) {
-      try { await navigator.share({ title, text: `${S.area.town}のごみ収集日`, url }); } catch {}
+      try { await navigator.share({ title, text: L().shareText(townLabel(S.area)), url }); } catch {}
       return;
     }
     try {
       await navigator.clipboard.writeText(url);
-      $("share").textContent = "リンクをコピーしました";
+      $("share").textContent = L().copied;
     } catch {
-      window.prompt("このリンクをコピーしてください", url);
+      window.prompt(L().copyPrompt, url);
     }
   });
 
@@ -907,6 +1100,26 @@
   // 開きっぱなしで日付や8:30をまたいだときに表示を更新
   document.addEventListener("visibilitychange", () => { if (!document.hidden && S && !$("main").hidden) renderTop(); });
 
+  $("lang").addEventListener("click", () => {
+    lang = isEn() ? "ja" : "en";
+    try { localStorage.setItem(LANG_KEY, lang); } catch {}
+    applyStatic();
+    // 表示中の画面だけ描き直す
+    if (!$("setup").hidden) {
+      if (!$("stepTown").hidden && townWard) {
+        const q = $("townQ").value;
+        openTowns(townWard).then(() => { $("townQ").value = q; $("townQ").oninput(); });
+      } else openSetup();
+    }
+    if (S) {
+      // カレンダーを開いている間も、戻ったときのためにメインを描き直しておく
+      $("areaName").textContent = isEn() ? townLabel(S.area) : areaLabel(S.area);
+      renderTop(); render();
+      if (!$("calView").hidden) renderCal();
+    }
+  });
+  applyStatic();
+
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   async function start() {
@@ -917,7 +1130,7 @@
       try { linked = await findArea(key); } catch {}
       if (!linked) {
         setUrl(saved && saved.id ? saved : null);
-        return saved ? openMain(saved) : openSetup("リンクの地域が見つかりませんでした。お手数ですが地域を選んでください。");
+        return saved ? openMain(saved) : openSetup(L().linkNotFound);
       }
       if (!saved) { store.set(linked); return openMain(linked); }
       return openMain(linked, true);
