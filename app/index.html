@@ -207,6 +207,21 @@
   .help .more-link a { color: var(--accent); font-weight: 700; }
   .share p { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
   .share .link-btn { font-size: 15px; padding: 10px 14px; }
+  /* ホーム画面に追加の案内 */
+  .install { display: flex; align-items: flex-start; gap: 10px; background: var(--accent); color: var(--accent-ink); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 15px; }
+  .install .body { flex: 1; }
+  .install strong { display: block; }
+  .install .primary { margin-top: 8px; border: 0; border-radius: 8px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent-ink); color: var(--accent); }
+  .install .how { margin: 8px 0 0; font-size: 14px; }
+  .install .close { border: 0; background: none; color: inherit; font-size: 20px; line-height: 1; padding: 2px 4px; cursor: pointer; }
+  /* 友達に知らせる */
+  .tell p { font-size: 14px; color: var(--sub); margin: 0 0 12px; }
+  .tell .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tell .btns a, .tell .btns button { border: 0; border-radius: 999px; padding: 10px 16px; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .tell .x { background: #000; color: #fff; }
+  .tell .line { background: #06C755; color: #fff; }
+  .tell .copy { background: var(--soft); color: var(--ink); }
+  @media (prefers-color-scheme: dark) { .tell .x { background: #fff; color: #000; } }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
   .error { text-align: center; padding: 40px 8px; color: var(--sub); }
   /* よくある質問（ふだんは見出し1行だけ） */
@@ -266,6 +281,15 @@
       <div class="week" id="week" aria-label="1週間の予定" data-i-aria="week"></div>
       <button class="cal-open" id="openCal" data-i="openCal">1か月のカレンダーを見る</button>
     </section>
+
+    <div class="install" id="install" hidden>
+      <div class="body">
+        <strong data-i="installTitle">ホーム画面に追加すると、アプリのように使えます</strong>
+        <button class="primary" id="installBtn"></button>
+        <p class="how" id="installHow" hidden></p>
+      </div>
+      <button class="close" id="installClose" aria-label="閉じる" data-i-aria="close">×</button>
+    </div>
 
     <label class="search-label" for="q" data-i="searchLabel">捨て方を調べる</label>
     <div class="search" id="searchBox">
@@ -388,6 +412,16 @@
     <p class="src">出典：広島市「家庭ごみの正しい出し方」「よくある質問と回答」など。判断に迷うものは、市のホームページか区の環境事業所でご確認ください。</p>
     </div>
   </details>
+
+  <section class="card tell" aria-label="友達に知らせる" data-i-aria="tellTitle">
+    <h2 data-i="tellTitle">ゴミナビを友達に知らせる</h2>
+    <p data-i="tellText">役に立ったら、ご家族や友達にも教えてあげてください。</p>
+    <div class="btns">
+      <a class="x" id="tellX" target="_blank" rel="noopener" data-i="tellX">X でポスト</a>
+      <a class="line" id="tellLine" target="_blank" rel="noopener" data-i="tellLine">LINE で送る</a>
+      <button class="copy" id="tellCopy" data-i="tellCopy">リンクをコピー</button>
+    </div>
+  </section>
 
   <footer>
     <span data-i="unofficial">このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。</span><br>
@@ -544,6 +578,13 @@
       back: "← Back",
       prevMonth: "Previous month",
       nextMonth: "Next month",
+      installTitle: "Add to your home screen to use it like an app",
+      close: "Close",
+      tellTitle: "Tell your friends about Gomi Navi",
+      tellText: "If you find it useful, please share it with your family and friends.",
+      tellX: "Post on X",
+      tellLine: "Send on LINE",
+      tellCopy: "Copy link",
       calNote: "PET bottles are collected with recyclable plastics, and hazardous waste with recyclables. Large-sized waste is collected only with a reservation.",
       faq: "FAQ",
       faqBody: `<details class="q"><summary>Which day are PET bottles collected?</summary><div class="a">
@@ -647,6 +688,12 @@
       calDay: (m, d) => `${m + 1}月${d}日`,
       shareTitle: (a) => `広島市ゴミナビ（${a}）`, shareText: (t) => `${t}のごみ収集日`,
       copied: "リンクをコピーしました", copyPrompt: "このリンクをコピーしてください",
+      installAdd: "追加する", installHowBtn: "追加のしかた",
+      installIos: "画面の下（iPadは上）にある共有ボタン（四角に上向き矢印のマーク）を押し、「ホーム画面に追加」を選んでください。",
+      installInApp: "LINEやXのアプリの中からは追加できません。メニューから「ブラウザで開く」を選び、SafariやChromeで開いてから追加してください。",
+      installOther: "ブラウザのメニュー（︙）から「ホーム画面に追加」または「アプリをインストール」を選んでください。",
+      tellMsg: "広島市のごみ収集日と分別がすぐわかる「広島市ゴミナビ」。町名を選ぶだけで明日のごみがわかります。",
+      tellTags: "広島市,ゴミ分別",
     },
     en: {
       loadError: "Could not load the data. Please check your connection and open the page again.",
@@ -676,6 +723,12 @@
       calDay: (m, d) => `${EN.months[m]} ${d}`,
       shareTitle: (a) => `Hiroshima Gomi Navi (${a})`, shareText: (t) => `Garbage collection days in ${t}`,
       copied: "Link copied", copyPrompt: "Copy this link",
+      installAdd: "Add", installHowBtn: "How to add",
+      installIos: "Tap the Share button (a square with an up arrow) at the bottom of the screen (top on iPad), then choose \"Add to Home Screen\".",
+      installInApp: "You can't add it from inside the LINE or X app. Choose \"Open in browser\" from the menu, then add it from Safari or Chrome.",
+      installOther: "From the browser menu (⋮), choose \"Add to Home screen\" or \"Install app\".",
+      tellMsg: "Gomi Navi: garbage collection days and sorting rules for Hiroshima City. Just pick your town.",
+      tellTags: "Hiroshima",
     },
   };
   const L = () => TXT[lang];
@@ -712,6 +765,8 @@
     }
     $("lang").textContent = isEn() ? "日本語" : "English";
     $("lang").lang = isEn() ? "ja" : "en";
+    setTellLinks();
+    renderInstall();
   }
 
   const $ = (id) => document.getElementById(id);
@@ -877,6 +932,7 @@
     $("main").hidden = false;
     $("q").value = "";
     renderTop();
+    renderInstall();
     render();
     window.scrollTo(0, 0);
   }
@@ -1169,6 +1225,59 @@
     }
   });
 
+  // ---- ホーム画面に追加の案内 ----
+  // 2回目に開いたときから表示。×で閉じるか追加したら二度と出さない。ホーム画面から開いたときは出さない
+  const INSTALL_KEY = "gominavi.install";
+  const install = {
+    get() { try { return JSON.parse(localStorage.getItem(INSTALL_KEY)) || { n: 0 }; } catch { return { n: 0 }; } },
+    set(v) { try { localStorage.setItem(INSTALL_KEY, JSON.stringify(v)); } catch {} },
+  };
+  const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const ua = navigator.userAgent;
+  const isIos = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const inApp = /\bLine\/|FBAN|FBAV|Instagram|Twitter/i.test(ua);
+  let installPrompt = null; // Android の Chrome などで、ボタンから直接追加できるとき
+
+  function renderInstall() {
+    const st = install.get();
+    $("install").hidden = !S || S.temporary || standalone() || st.off || st.n < 2;
+    $("installBtn").textContent = installPrompt ? L().installAdd : L().installHowBtn;
+    if (!$("installHow").hidden) $("installHow").textContent = installHowText();
+  }
+  const installHowText = () => inApp ? L().installInApp : isIos ? L().installIos : L().installOther;
+  const closeInstall = () => { install.set({ ...install.get(), off: true }); $("install").hidden = true; };
+
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; if (S) renderInstall(); });
+  window.addEventListener("appinstalled", closeInstall);
+  $("installBtn").addEventListener("click", async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      installPrompt = null;
+      if (outcome === "accepted") closeInstall(); else renderInstall();
+      return;
+    }
+    $("installHow").hidden = !$("installHow").hidden;
+    $("installHow").textContent = installHowText();
+  });
+  $("installClose").addEventListener("click", closeInstall);
+
+  // ---- 友達に知らせる（地域ではなくアプリのトップを紹介する） ----
+  const SITE_URL = document.querySelector('link[rel="canonical"]').href;
+  function setTellLinks() {
+    const enc = encodeURIComponent;
+    $("tellX").href = `https://x.com/intent/post?text=${enc(L().tellMsg)}&url=${enc(SITE_URL)}&hashtags=${enc(L().tellTags)}`;
+    $("tellLine").href = `https://line.me/R/share?text=${enc(`${L().tellMsg}\n${SITE_URL}`)}`;
+  }
+  $("tellCopy").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(SITE_URL);
+      $("tellCopy").textContent = L().copied;
+    } catch {
+      window.prompt(L().copyPrompt, SITE_URL);
+    }
+  });
+
   $("q").addEventListener("input", render);
   $("clear").addEventListener("click", () => { $("q").value = ""; render(); $("q").focus(); });
   // 決定キー・入力欄から離れたときも履歴に残す（見つかったときだけ）
@@ -1209,6 +1318,7 @@
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   async function start() {
+    install.set({ ...install.get(), n: install.get().n + 1 });
     const saved = store.get();
     const key = new URLSearchParams(location.search).get("area");
     if (key && !(saved && saved.id && areaKey(saved) === key)) {
