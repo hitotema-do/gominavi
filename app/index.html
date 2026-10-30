@@ -216,7 +216,7 @@
   .how { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--soft); color: var(--ink); font-size: 14px; }
   /* もっと便利に（ホーム画面に置く・友達に知らせる） */
   .more-use .item { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
-  .more-use .item:first-of-type { border-top: 0; padding-top: 0; }
+  .more-use h2 + .item, .more-use h2 + .item[hidden] + .item { border-top: 0; padding-top: 0; }
   .more-use .ic { flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--soft); color: var(--accent); display: grid; place-items: center; }
   .more-use .ic svg { width: 20px; height: 20px; }
   .more-use .body { flex: 1; min-width: 0; }
