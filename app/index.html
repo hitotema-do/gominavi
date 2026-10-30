@@ -207,6 +207,23 @@
   .help .more-link a { color: var(--accent); font-weight: 700; }
   .share p { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
   .share .link-btn { font-size: 15px; padding: 10px 14px; }
+  /* ホーム画面に置く（種類ごとの次の収集日の下の1行） */
+  .place { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--sub); }
+  .place .row { display: flex; align-items: center; gap: 8px; }
+  .place .row span { flex: 1; }
+  .place .go { border: 0; background: none; color: var(--accent); font-weight: 700; font-size: 14px; padding: 4px 0; cursor: pointer; white-space: nowrap; }
+  .place .close { border: 0; background: none; color: var(--sub); font-size: 18px; line-height: 1; padding: 4px; cursor: pointer; }
+  .how { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--soft); color: var(--ink); font-size: 14px; }
+  /* もっと便利に（ホーム画面に置く・友達に知らせる） */
+  .more-use .item { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .more-use .item:first-of-type { border-top: 0; padding-top: 0; }
+  .more-use .ic { flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--soft); color: var(--accent); display: grid; place-items: center; }
+  .more-use .ic svg { width: 20px; height: 20px; }
+  .more-use .body { flex: 1; min-width: 0; }
+  .more-use strong { display: block; font-size: 15px; }
+  .more-use .sub { font-size: 13px; color: var(--sub); margin: 2px 0 8px; }
+  .more-use .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .more-use .btns a, .more-use .btns button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 7px 12px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
   .error { text-align: center; padding: 40px 8px; color: var(--sub); }
   /* よくある質問（ふだんは見出し1行だけ） */
@@ -278,6 +295,14 @@
       <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日" data-i-aria="kindsTitle">
         <h2 data-i="kindsTitle">種類ごとの次の収集日</h2>
         <div id="kinds"></div>
+        <div class="place" id="install" hidden>
+          <div class="row">
+            <span data-i="placeText">毎朝ここを見るなら、ホーム画面に置くと1タップで開けます。</span>
+            <button class="go" id="installBtn"></button>
+            <button class="close" id="installClose" aria-label="閉じる" data-i-aria="close">×</button>
+          </div>
+          <p class="how" id="installHow" hidden></p>
+        </div>
       </section>
       <section class="card help" aria-label="困ったときは" data-i-aria="help">
         <h2 data-i="help">困ったときは</h2>
@@ -389,11 +414,35 @@
     </div>
   </details>
 
+  <section class="card more-use" aria-label="ゴミナビをもっと便利に" data-i-aria="moreUse">
+    <h2 data-i="moreUse">ゴミナビをもっと便利に</h2>
+    <div class="item" id="placeItem">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></div>
+      <div class="body">
+        <strong data-i="placeTitle">ホーム画面に置く</strong>
+        <p class="sub" data-i="placeSub">次からは、アイコンを押すだけで開けます。</p>
+        <div class="btns"><button id="placeBtn"></button></div>
+        <p class="how" id="placeHow" hidden></p>
+      </div>
+    </div>
+    <div class="item">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+      <div class="body">
+        <strong data-i="tellTitle">友達に知らせる</strong>
+        <p class="sub" data-i="tellText">役に立ったら、ご家族や友達にも教えてください。</p>
+        <div class="btns">
+          <a id="tellX" target="_blank" rel="noopener" data-i="tellX">X でポスト</a>
+          <a id="tellLine" target="_blank" rel="noopener" data-i="tellLine">LINE で送る</a>
+          <button id="tellCopy" data-i="tellCopy">リンクをコピー</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <span data-i="unofficial">このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。</span><br>
     <span data-i="source">データ出典：<a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">広島市 家庭ごみ収集・分別情報（オープンデータ）</a></span><span id="range"></span>
     <br><span data-i="license">上記データ（<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>）を加工して作成しています。</span>
-    <br><span data-i="analytics">利用状況を知るため、Cloudflare Web Analytics でアクセス数を集計しています（個人を特定する情報は集めていません）。</span>
   </footer>
 </div>
 
@@ -544,6 +593,16 @@
       back: "← Back",
       prevMonth: "Previous month",
       nextMonth: "Next month",
+      placeText: "If you check this every morning, put it on your home screen to open it in one tap.",
+      moreUse: "Get more out of Gomi Navi",
+      placeTitle: "Put it on your home screen",
+      placeSub: "Next time, just tap the icon to open it.",
+      close: "Close",
+      tellTitle: "Tell your friends",
+      tellText: "If you find it useful, please tell your family and friends.",
+      tellX: "Post on X",
+      tellLine: "Send on LINE",
+      tellCopy: "Copy link",
       calNote: "PET bottles are collected with recyclable plastics, and hazardous waste with recyclables. Large-sized waste is collected only with a reservation.",
       faq: "FAQ",
       faqBody: `<details class="q"><summary>Which day are PET bottles collected?</summary><div class="a">
@@ -613,7 +672,6 @@
       unofficial: `This app is not an official service of Hiroshima City. For the latest information, or if you are unsure, please check the <a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">Hiroshima City website</a> (Japanese).`,
       source: `Data: <a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">Hiroshima City household waste collection and sorting data (open data)</a>`,
       license: `Created by processing the above data (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>).`,
-      analytics: "We count page views with Cloudflare Web Analytics to understand usage (no personally identifiable information is collected).",
     },
   };
 
@@ -647,6 +705,12 @@
       calDay: (m, d) => `${m + 1}月${d}日`,
       shareTitle: (a) => `広島市ゴミナビ（${a}）`, shareText: (t) => `${t}のごみ収集日`,
       copied: "リンクをコピーしました", copyPrompt: "このリンクをコピーしてください",
+      installAdd: "置く ›", installHowBtn: "置き方 ›", placeAdd: "ホーム画面に置く", placeHowBtn: "置き方を見る",
+      installIos: "画面の下（iPadは上）にある共有ボタン（四角に上向き矢印のマーク）を押し、「ホーム画面に追加」を選んでください。",
+      installInApp: "LINEやXのアプリの中からは追加できません。メニューから「ブラウザで開く」を選び、SafariやChromeで開いてから追加してください。",
+      installOther: "ブラウザのメニュー（︙）から「ホーム画面に追加」または「アプリをインストール」を選んでください。",
+      tellMsg: "広島市のごみ収集日と分別がすぐわかる「広島市ゴミナビ」。町名を選ぶだけで明日のごみがわかります。",
+      tellTags: "広島市,ゴミ分別",
     },
     en: {
       loadError: "Could not load the data. Please check your connection and open the page again.",
@@ -676,6 +740,12 @@
       calDay: (m, d) => `${EN.months[m]} ${d}`,
       shareTitle: (a) => `Hiroshima Gomi Navi (${a})`, shareText: (t) => `Garbage collection days in ${t}`,
       copied: "Link copied", copyPrompt: "Copy this link",
+      installAdd: "Add ›", installHowBtn: "How ›", placeAdd: "Add to home screen", placeHowBtn: "See how",
+      installIos: "Tap the Share button (a square with an up arrow) at the bottom of the screen (top on iPad), then choose \"Add to Home Screen\".",
+      installInApp: "You can't add it from inside the LINE or X app. Choose \"Open in browser\" from the menu, then add it from Safari or Chrome.",
+      installOther: "From the browser menu (⋮), choose \"Add to Home screen\" or \"Install app\".",
+      tellMsg: "Gomi Navi: garbage collection days and sorting rules for Hiroshima City. Just pick your town.",
+      tellTags: "Hiroshima",
     },
   };
   const L = () => TXT[lang];
@@ -712,6 +782,8 @@
     }
     $("lang").textContent = isEn() ? "日本語" : "English";
     $("lang").lang = isEn() ? "ja" : "en";
+    setTellLinks();
+    renderInstall();
   }
 
   const $ = (id) => document.getElementById(id);
@@ -877,6 +949,7 @@
     $("main").hidden = false;
     $("q").value = "";
     renderTop();
+    renderInstall();
     render();
     window.scrollTo(0, 0);
   }
@@ -1169,6 +1242,65 @@
     }
   });
 
+  // ---- ホーム画面に追加の案内 ----
+  // 2回目に開いたときから表示。×で閉じるか追加したら二度と出さない。ホーム画面から開いたときは出さない
+  const INSTALL_KEY = "gominavi.install";
+  const install = {
+    get() { try { return JSON.parse(localStorage.getItem(INSTALL_KEY)) || { n: 0 }; } catch { return { n: 0 }; } },
+    set(v) { try { localStorage.setItem(INSTALL_KEY, JSON.stringify(v)); } catch {} },
+  };
+  const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const ua = navigator.userAgent;
+  const isIos = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const inApp = /\bLine\/|FBAN|FBAV|Instagram|Twitter/i.test(ua);
+  let installPrompt = null; // Android の Chrome などで、ボタンから直接追加できるとき
+
+  function renderInstall() {
+    const st = install.get();
+    $("install").hidden = !S || S.temporary || standalone() || st.off || st.n < 2;
+    $("placeItem").hidden = standalone();
+    $("installBtn").textContent = installPrompt ? L().installAdd : L().installHowBtn;
+    $("placeBtn").textContent = installPrompt ? L().placeAdd : L().placeHowBtn;
+    for (const id of ["installHow", "placeHow"]) if (!$(id).hidden) $(id).textContent = installHowText();
+  }
+  const installHowText = () => inApp ? L().installInApp : isIos ? L().installIos : L().installOther;
+  const closeInstall = () => { install.set({ ...install.get(), off: true }); $("install").hidden = true; };
+
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; renderInstall(); });
+  window.addEventListener("appinstalled", () => { closeInstall(); renderInstall(); });
+  // 直接追加できるときは追加の画面を出し、できないときは手順を開閉する
+  const onInstall = (howId) => async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      installPrompt = null;
+      if (outcome === "accepted") closeInstall();
+      renderInstall();
+      return;
+    }
+    $(howId).hidden = !$(howId).hidden;
+    $(howId).textContent = installHowText();
+  };
+  $("installBtn").addEventListener("click", onInstall("installHow"));
+  $("placeBtn").addEventListener("click", onInstall("placeHow"));
+  $("installClose").addEventListener("click", closeInstall);
+
+  // ---- 友達に知らせる（地域ではなくアプリのトップを紹介する） ----
+  const SITE_URL = document.querySelector('link[rel="canonical"]').href;
+  function setTellLinks() {
+    const enc = encodeURIComponent;
+    $("tellX").href = `https://x.com/intent/post?text=${enc(L().tellMsg)}&url=${enc(SITE_URL)}&hashtags=${enc(L().tellTags)}`;
+    $("tellLine").href = `https://line.me/R/share?text=${enc(`${L().tellMsg}\n${SITE_URL}`)}`;
+  }
+  $("tellCopy").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(SITE_URL);
+      $("tellCopy").textContent = L().copied;
+    } catch {
+      window.prompt(L().copyPrompt, SITE_URL);
+    }
+  });
+
   $("q").addEventListener("input", render);
   $("clear").addEventListener("click", () => { $("q").value = ""; render(); $("q").focus(); });
   // 決定キー・入力欄から離れたときも履歴に残す（見つかったときだけ）
@@ -1209,6 +1341,7 @@
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   async function start() {
+    install.set({ ...install.get(), n: install.get().n + 1 });
     const saved = store.get();
     const key = new URLSearchParams(location.search).get("area");
     if (key && !(saved && saved.id && areaKey(saved) === key)) {
