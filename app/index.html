@@ -223,7 +223,11 @@
   .more-use strong { display: block; font-size: 15px; }
   .more-use .sub { font-size: 13px; color: var(--sub); margin: 2px 0 8px; }
   .more-use .btns { display: flex; flex-wrap: wrap; gap: 8px; }
-  .more-use .btns a, .more-use .btns button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 7px 12px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .more-use .btns a, .more-use .btns button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .more-use .btns .x { background: #000; border-color: #000; color: #fff; }
+  .more-use .btns .line { background: #06C755; border-color: #06C755; color: #fff; }
+  .more-use .btns .copy { background: var(--soft); border-color: var(--soft); }
+  @media (prefers-color-scheme: dark) { .more-use .btns .x { background: #fff; border-color: #fff; color: #000; } }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
   .error { text-align: center; padding: 40px 8px; color: var(--sub); }
   /* よくある質問（ふだんは見出し1行だけ） */
@@ -431,9 +435,9 @@
         <strong data-i="tellTitle">友達に知らせる</strong>
         <p class="sub" data-i="tellText">役に立ったら、ご家族や友達にも教えてください。</p>
         <div class="btns">
-          <a id="tellX" target="_blank" rel="noopener" data-i="tellX">X でポスト</a>
-          <a id="tellLine" target="_blank" rel="noopener" data-i="tellLine">LINE で送る</a>
-          <button id="tellCopy" data-i="tellCopy">リンクをコピー</button>
+          <a class="x" id="tellX" target="_blank" rel="noopener" data-i="tellX">X でポスト</a>
+          <a class="line" id="tellLine" target="_blank" rel="noopener" data-i="tellLine">LINE で送る</a>
+          <button class="copy" id="tellCopy" data-i="tellCopy">リンクをコピー</button>
         </div>
       </div>
     </div>
