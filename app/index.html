@@ -207,21 +207,23 @@
   .help .more-link a { color: var(--accent); font-weight: 700; }
   .share p { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
   .share .link-btn { font-size: 15px; padding: 10px 14px; }
-  /* ホーム画面に追加の案内 */
-  .install { display: flex; align-items: flex-start; gap: 10px; background: var(--accent); color: var(--accent-ink); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 15px; }
-  .install .body { flex: 1; }
-  .install strong { display: block; }
-  .install .primary { margin-top: 8px; border: 0; border-radius: 8px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent-ink); color: var(--accent); }
-  .install .how { margin: 8px 0 0; font-size: 14px; }
-  .install .close { border: 0; background: none; color: inherit; font-size: 20px; line-height: 1; padding: 2px 4px; cursor: pointer; }
-  /* 友達に知らせる */
-  .tell p { font-size: 14px; color: var(--sub); margin: 0 0 12px; }
-  .tell .btns { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tell .btns a, .tell .btns button { border: 0; border-radius: 999px; padding: 10px 16px; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; }
-  .tell .x { background: #000; color: #fff; }
-  .tell .line { background: #06C755; color: #fff; }
-  .tell .copy { background: var(--soft); color: var(--ink); }
-  @media (prefers-color-scheme: dark) { .tell .x { background: #fff; color: #000; } }
+  /* ホーム画面に置く（種類ごとの次の収集日の下の1行） */
+  .place { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--sub); }
+  .place .row { display: flex; align-items: center; gap: 8px; }
+  .place .row span { flex: 1; }
+  .place .go { border: 0; background: none; color: var(--accent); font-weight: 700; font-size: 14px; padding: 4px 0; cursor: pointer; white-space: nowrap; }
+  .place .close { border: 0; background: none; color: var(--sub); font-size: 18px; line-height: 1; padding: 4px; cursor: pointer; }
+  .how { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--soft); color: var(--ink); font-size: 14px; }
+  /* もっと便利に（ホーム画面に置く・友達に知らせる） */
+  .more-use .item { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .more-use .item:first-of-type { border-top: 0; padding-top: 0; }
+  .more-use .ic { flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--soft); color: var(--accent); display: grid; place-items: center; }
+  .more-use .ic svg { width: 20px; height: 20px; }
+  .more-use .body { flex: 1; min-width: 0; }
+  .more-use strong { display: block; font-size: 15px; }
+  .more-use .sub { font-size: 13px; color: var(--sub); margin: 2px 0 8px; }
+  .more-use .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .more-use .btns a, .more-use .btns button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 7px 12px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
   .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 10px 14px; font-size: 14px; margin-bottom: 14px; }
   .error { text-align: center; padding: 40px 8px; color: var(--sub); }
   /* よくある質問（ふだんは見出し1行だけ） */
@@ -282,15 +284,6 @@
       <button class="cal-open" id="openCal" data-i="openCal">1か月のカレンダーを見る</button>
     </section>
 
-    <div class="install" id="install" hidden>
-      <div class="body">
-        <strong data-i="installTitle">ホーム画面に追加すると、アプリのように使えます</strong>
-        <button class="primary" id="installBtn"></button>
-        <p class="how" id="installHow" hidden></p>
-      </div>
-      <button class="close" id="installClose" aria-label="閉じる" data-i-aria="close">×</button>
-    </div>
-
     <label class="search-label" for="q" data-i="searchLabel">捨て方を調べる</label>
     <div class="search" id="searchBox">
       <input id="q" type="search" placeholder="品目を入力（例：傘、電池）" autocomplete="off" enterkeyhint="search" data-i-ph="q">
@@ -302,6 +295,14 @@
       <section class="card" style="margin-top:18px" aria-label="種類ごとの次の収集日" data-i-aria="kindsTitle">
         <h2 data-i="kindsTitle">種類ごとの次の収集日</h2>
         <div id="kinds"></div>
+        <div class="place" id="install" hidden>
+          <div class="row">
+            <span data-i="placeText">毎朝ここを見るなら、ホーム画面に置くと1タップで開けます。</span>
+            <button class="go" id="installBtn"></button>
+            <button class="close" id="installClose" aria-label="閉じる" data-i-aria="close">×</button>
+          </div>
+          <p class="how" id="installHow" hidden></p>
+        </div>
       </section>
       <section class="card help" aria-label="困ったときは" data-i-aria="help">
         <h2 data-i="help">困ったときは</h2>
@@ -413,13 +414,28 @@
     </div>
   </details>
 
-  <section class="card tell" aria-label="友達に知らせる" data-i-aria="tellTitle">
-    <h2 data-i="tellTitle">ゴミナビを友達に知らせる</h2>
-    <p data-i="tellText">役に立ったら、ご家族や友達にも教えてあげてください。</p>
-    <div class="btns">
-      <a class="x" id="tellX" target="_blank" rel="noopener" data-i="tellX">X でポスト</a>
-      <a class="line" id="tellLine" target="_blank" rel="noopener" data-i="tellLine">LINE で送る</a>
-      <button class="copy" id="tellCopy" data-i="tellCopy">リンクをコピー</button>
+  <section class="card more-use" aria-label="ゴミナビをもっと便利に" data-i-aria="moreUse">
+    <h2 data-i="moreUse">ゴミナビをもっと便利に</h2>
+    <div class="item" id="placeItem">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></div>
+      <div class="body">
+        <strong data-i="placeTitle">ホーム画面に置く</strong>
+        <p class="sub" data-i="placeSub">次からは、アイコンを押すだけで開けます。</p>
+        <div class="btns"><button id="placeBtn"></button></div>
+        <p class="how" id="placeHow" hidden></p>
+      </div>
+    </div>
+    <div class="item">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+      <div class="body">
+        <strong data-i="tellTitle">友達に知らせる</strong>
+        <p class="sub" data-i="tellText">役に立ったら、ご家族や友達にも教えてください。</p>
+        <div class="btns">
+          <a id="tellX" target="_blank" rel="noopener" data-i="tellX">X でポスト</a>
+          <a id="tellLine" target="_blank" rel="noopener" data-i="tellLine">LINE で送る</a>
+          <button id="tellCopy" data-i="tellCopy">リンクをコピー</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -578,10 +594,13 @@
       back: "← Back",
       prevMonth: "Previous month",
       nextMonth: "Next month",
-      installTitle: "Add to your home screen to use it like an app",
+      placeText: "If you check this every morning, put it on your home screen to open it in one tap.",
+      moreUse: "Get more out of Gomi Navi",
+      placeTitle: "Put it on your home screen",
+      placeSub: "Next time, just tap the icon to open it.",
       close: "Close",
-      tellTitle: "Tell your friends about Gomi Navi",
-      tellText: "If you find it useful, please share it with your family and friends.",
+      tellTitle: "Tell your friends",
+      tellText: "If you find it useful, please tell your family and friends.",
       tellX: "Post on X",
       tellLine: "Send on LINE",
       tellCopy: "Copy link",
@@ -688,7 +707,7 @@
       calDay: (m, d) => `${m + 1}月${d}日`,
       shareTitle: (a) => `広島市ゴミナビ（${a}）`, shareText: (t) => `${t}のごみ収集日`,
       copied: "リンクをコピーしました", copyPrompt: "このリンクをコピーしてください",
-      installAdd: "追加する", installHowBtn: "追加のしかた",
+      installAdd: "置く ›", installHowBtn: "置き方 ›", placeAdd: "ホーム画面に置く", placeHowBtn: "置き方を見る",
       installIos: "画面の下（iPadは上）にある共有ボタン（四角に上向き矢印のマーク）を押し、「ホーム画面に追加」を選んでください。",
       installInApp: "LINEやXのアプリの中からは追加できません。メニューから「ブラウザで開く」を選び、SafariやChromeで開いてから追加してください。",
       installOther: "ブラウザのメニュー（︙）から「ホーム画面に追加」または「アプリをインストール」を選んでください。",
@@ -723,7 +742,7 @@
       calDay: (m, d) => `${EN.months[m]} ${d}`,
       shareTitle: (a) => `Hiroshima Gomi Navi (${a})`, shareText: (t) => `Garbage collection days in ${t}`,
       copied: "Link copied", copyPrompt: "Copy this link",
-      installAdd: "Add", installHowBtn: "How to add",
+      installAdd: "Add ›", installHowBtn: "How ›", placeAdd: "Add to home screen", placeHowBtn: "See how",
       installIos: "Tap the Share button (a square with an up arrow) at the bottom of the screen (top on iPad), then choose \"Add to Home Screen\".",
       installInApp: "You can't add it from inside the LINE or X app. Choose \"Open in browser\" from the menu, then add it from Safari or Chrome.",
       installOther: "From the browser menu (⋮), choose \"Add to Home screen\" or \"Install app\".",
@@ -1241,25 +1260,31 @@
   function renderInstall() {
     const st = install.get();
     $("install").hidden = !S || S.temporary || standalone() || st.off || st.n < 2;
+    $("placeItem").hidden = standalone();
     $("installBtn").textContent = installPrompt ? L().installAdd : L().installHowBtn;
-    if (!$("installHow").hidden) $("installHow").textContent = installHowText();
+    $("placeBtn").textContent = installPrompt ? L().placeAdd : L().placeHowBtn;
+    for (const id of ["installHow", "placeHow"]) if (!$(id).hidden) $(id).textContent = installHowText();
   }
   const installHowText = () => inApp ? L().installInApp : isIos ? L().installIos : L().installOther;
   const closeInstall = () => { install.set({ ...install.get(), off: true }); $("install").hidden = true; };
 
-  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; if (S) renderInstall(); });
-  window.addEventListener("appinstalled", closeInstall);
-  $("installBtn").addEventListener("click", async () => {
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; renderInstall(); });
+  window.addEventListener("appinstalled", () => { closeInstall(); renderInstall(); });
+  // 直接追加できるときは追加の画面を出し、できないときは手順を開閉する
+  const onInstall = (howId) => async () => {
     if (installPrompt) {
       installPrompt.prompt();
       const { outcome } = await installPrompt.userChoice;
       installPrompt = null;
-      if (outcome === "accepted") closeInstall(); else renderInstall();
+      if (outcome === "accepted") closeInstall();
+      renderInstall();
       return;
     }
-    $("installHow").hidden = !$("installHow").hidden;
-    $("installHow").textContent = installHowText();
-  });
+    $(howId).hidden = !$(howId).hidden;
+    $(howId).textContent = installHowText();
+  };
+  $("installBtn").addEventListener("click", onInstall("installHow"));
+  $("placeBtn").addEventListener("click", onInstall("placeHow"));
   $("installClose").addEventListener("click", closeInstall);
 
   // ---- 友達に知らせる（地域ではなくアプリのトップを紹介する） ----
