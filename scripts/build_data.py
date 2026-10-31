@@ -1,7 +1,7 @@
 """広島市オープンデータ (data/raw/) から app/data/*.json を作る。
 
-毎年4月に新年度の「家庭ごみ収集日程表」ZIP を展開して data/raw/r◯/ に置き、
-YEAR_DIR を書き換えてこのスクリプトを実行する:
+新年度の「家庭ごみ収集日程表」ZIP を展開して data/raw/r◯/（令和の年度）に置くと、
+いちばん新しい年度のフォルダを使ってこのスクリプトが変換する（scripts/auto_update.py が自動で行う）:
     python scripts/build_data.py
 
 出力:
@@ -18,8 +18,6 @@ import json
 import re
 import unicodedata
 from pathlib import Path
-
-YEAR_DIR = "r8"  # 令和8年度
 
 WARDS = [  # (ファイル番号, 区名, コード)
     (1, "中区", "naka"),
@@ -39,6 +37,9 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 I18N = ROOT / "data" / "i18n"
 OUT = ROOT / "app" / "data"
+
+# いちばん新しい年度のフォルダ（例：r8 = 令和8年度）
+YEAR_DIR = max((p.name for p in RAW.glob("r[0-9]*") if p.is_dir()), key=lambda n: int(n[1:]))
 
 try:
     import pykakasi

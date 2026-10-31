@@ -2,13 +2,15 @@ name: Watch Hiroshima open data
 
 # 毎朝7時（日本時間）に起動。見張る日かどうかは scripts/watch_opendata.py が決める
 # （1/15〜4/10 は毎日、それ以外は毎月1日だけ）。
+# 新しいデータが見つかったら scripts/auto_update.py で自動更新し、点検に通れば公開まで進める。
+# 点検に引っかかったときだけ、何も公開せず issue で知らせる。
 on:
   schedule:
     - cron: "0 22 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   actions: write
 
@@ -24,8 +26,40 @@ jobs:
       - id: check
         run: python scripts/watch_opendata.py ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
 
-      - name: Notify by issue
+      - uses: actions/setup-python@v5
         if: steps.check.outputs.changes != ''
+        with:
+          python-version: "3.12"
+
+      # 新しいデータがあれば、自動で作り直す（点検に引っかかると失敗で終わり、何も公開しない）
+      - id: update
+        if: steps.check.outputs.changes != ''
+        continue-on-error: true
+        run: |
+          pip install pykakasi
+          set -o pipefail
+          python scripts/auto_update.py 2>&1 | tee update.log
+
+      - name: Publish the update
+        if: steps.update.outcome == 'success'
+        env:
+          CHANGES: ${{ steps.check.outputs.changes }}
+        run: |
+          git config user.name hitotema-do
+          git config user.email 337497754+hitotema-do@users.noreply.github.com
+          git add app data
+          if git diff --cached --quiet; then echo "変更なし"; exit 0; fi
+          git commit -m "広島市の新しいデータで自動更新（見張り番）"
+          git push
+          # GitHub Actions からの push では公開の仕組みが自動で動かないので、こちらから起動する
+          gh workflow run pages.yml
+          gh label create "$LABEL" --color FBCA04 --force
+          printf '%s\n' "@${{ github.repository_owner }} 広島市の新しいデータで、ゴミナビを自動で更新して公開しました。" "" "$CHANGES" "" "点検（去年と比べて極端に違わないか、など）には通っています。念のため、いくつかの町の収集日を市のカレンダーと見比べてください。" "" "おかしいときは Claude に「自動更新を元に戻して」と伝えてください。" > body.md
+          url=$(gh issue create --label "$LABEL" --title "【ゴミナビ】自動で更新しました" --body-file body.md)
+          gh issue close "$url"
+
+      - name: Notify by issue
+        if: steps.update.outcome == 'failure'
         env:
           CHANGES: ${{ steps.check.outputs.changes }}
         run: |
@@ -33,13 +67,8 @@ jobs:
           if [ -n "$(gh issue list --label "$LABEL" --state open --json number --jq '.[].number')" ]; then
             echo "お知らせ済み（開いている issue あり）"; exit 0
           fi
-          gh issue create --label "$LABEL" \
-            --title "【ゴミナビ】広島市の新しいデータが出ました" \
-            --body "@${{ github.repository_owner }} 広島市オープンデータに、ゴミナビがまだ使っていないデータがあります。
-
-          $CHANGES
-
-          Claude に「ゴミナビ更新して」と伝えてください。更新が終わったらこの issue を閉じます。"
+          printf '%s\n' "@${{ github.repository_owner }} 広島市オープンデータに新しいデータが出ましたが、自動更新が途中で止まりました（公開はしていないので、今のサイトはそのままです）。" "" "$CHANGES" "" "止まった理由（記録の最後の部分）：" '```' "$(tail -n 25 update.log)" '```' "" "記録の全体：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" "" "Claude に「ゴミナビ更新して」と伝えてください。更新が終わったらこの issue を閉じます。" > body.md
+          gh issue create --label "$LABEL" --title "【ゴミナビ】新しいデータが出ました（自動更新は止まりました）" --body-file body.md
 
       - name: Notify failure
         if: failure()
