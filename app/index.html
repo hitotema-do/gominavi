@@ -247,6 +247,8 @@
   .faq .src { font-size: 12px; color: var(--sub); padding: 10px 16px 14px; margin: 0; border-top: 1px solid var(--line); }
   footer { font-size: 12px; color: var(--sub); margin-top: 28px; line-height: 1.8; }
   footer a { color: var(--sub); }
+  .foot-links { display: flex; flex-wrap: wrap; gap: 0 18px; margin-top: 10px; }
+  .foot-links a { padding: 7px 0; }
 </style>
 <script>
 // ひとてま堂の数え係：このスマホ・PCで1日1回だけ「+1」を送る（名前や端末を見分ける番号は送らない）
@@ -483,8 +485,13 @@
   <footer>
     <span data-i="unofficial">このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。</span><br>
     <span data-i="source">データ出典：<a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">広島市 家庭ごみ収集・分別情報（オープンデータ）</a></span><span id="range"></span>
-    <br><span data-i="license">上記データ（<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>）を加工して作成しています。</span>
-    <br><span data-i="counting">利用状況を知るため、1日に何台から開かれたかを数えています（個人を特定する情報は集めていません）。</span>
+    <nav class="foot-links" data-i-aria="footNav" aria-label="運営情報">
+      <a href="about.html" data-i="footAbout">このアプリについて</a>
+      <a href="privacy.html" data-i="footPrivacy">プライバシーポリシー</a>
+      <a href="contact.html" data-i="footContact">お問い合わせ</a>
+      <a href="hitotema.html" data-i="footShop">ひとてま堂について</a>
+    </nav>
+    © 2026 ひとてま堂
   </footer>
 </div>
 
@@ -713,8 +720,11 @@
     <p class="src">Sources: Hiroshima City "How to put out household garbage", "FAQ", etc. (Japanese). If you are unsure, check the city website or contact your ward's environmental office.</p>`,
       unofficial: `This app is not an official service of Hiroshima City. For the latest information, or if you are unsure, please check the <a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">Hiroshima City website</a> (Japanese).`,
       source: `Data: <a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">Hiroshima City household waste collection and sorting data (open data)</a>`,
-      license: `Created by processing the above data (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>).`,
-      counting: `To understand usage, we count how many devices open this app each day (no personally identifiable information is collected).`,
+      footNav: "About this site",
+      footAbout: "About this app (Japanese)",
+      footPrivacy: "Privacy policy (Japanese)",
+      footContact: "Contact (Japanese)",
+      footShop: "About Hitotema-do (Japanese)",
     },
   };
 
