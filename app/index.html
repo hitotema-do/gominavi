@@ -509,6 +509,7 @@
     <span data-i="unofficial">このアプリは広島市の公式サービスではありません。最新の情報や判断に迷うものは、<a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">広島市のホームページ</a>でご確認ください。</span><br>
     <span data-i="source">データ出典：<a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">広島市 家庭ごみ収集・分別情報（オープンデータ）</a></span><span id="range"></span>
     <nav class="foot-links" data-i-aria="footNav" aria-label="運営情報">
+      <a href="gomi/" data-i="footItems">品目一覧（50音順）</a>
       <a href="about.html" data-i="footAbout">このアプリについて</a>
       <a href="privacy.html" data-i="footPrivacy">プライバシーポリシー</a>
       <a href="contact.html" data-i="footContact">お問い合わせ</a>
@@ -744,6 +745,7 @@
       unofficial: `This app is not an official service of Hiroshima City. For the latest information, or if you are unsure, please check the <a href="https://www.city.hiroshima.lg.jp/living/gomi-kankyo/" target="_blank" rel="noopener">Hiroshima City website</a> (Japanese).`,
       source: `Data: <a href="https://hiroshima-opendata.dataeye.jp/datasets/1338" target="_blank" rel="noopener">Hiroshima City household waste collection and sorting data (open data)</a>`,
       footNav: "About this site",
+      footItems: "Item list (Japanese)",
       footAbout: "About this app (Japanese)",
       footPrivacy: "Privacy policy (Japanese)",
       footContact: "Contact (Japanese)",
@@ -1028,6 +1030,7 @@
     renderInstall();
     render();
     window.scrollTo(0, 0);
+    if (pendingQ) { const q = pendingQ; pendingQ = null; setQuery(q); } // 品目ページから来たとき
   }
 
   function renderTop() {
@@ -1416,7 +1419,17 @@
 
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
+  // 品目ページ（gomi/〇〇.html）のボタンから来たときの品目名。町を選んだあと、ホーム画面でその品目を出す
+  let pendingQ = null;
   async function start() {
+    {
+      const p = new URLSearchParams(location.search), q = (p.get("q") || "").trim().slice(0, 40);
+      if (q) {
+        pendingQ = q;
+        p.delete("q");
+        history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
+      }
+    }
     install.set({ ...install.get(), n: install.get().n + 1 });
     const saved = store.get();
     const key = new URLSearchParams(location.search).get("area");

@@ -10,6 +10,7 @@ import html
 import json
 import re
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "app"
@@ -162,7 +163,11 @@ def main():
             parts.append(f"  <p>{e(kind)}の収集日は、町によって違います。ゴミナビで町名を選ぶと、次に出せる日がすぐ分かります。</p>")
         else:
             parts.append("  <h2>ほかの品目も調べる</h2>")
-        parts.append('  <p><a class="btn" href="../?from=item">ゴミナビを開く（無料・登録不要）</a></p>')
+        q = quote(n)
+        label = f"{n}を次に出せる日を見る" if kind else "ゴミナビで調べる"
+        parts.append(f'  <p><a class="btn" href="../?from=item&amp;q={q}">{e(label)}</a></p>')
+        if kind:
+            parts.append('  <p class="small">初めての方は、区と町を選ぶと表示されます（無料・登録不要）。</p>')
         # 関連：名前が似ているもの → 同じ区分で50音が近いもの
         b = base_name(n)
         tail = b[-2:] if len(b) >= 3 and re.fullmatch(r"[\u4e00-\u9fff]{2}", b[-2:]) else None
@@ -202,7 +207,6 @@ def main():
     sm = APP / "sitemap.xml"
     keep = [u for u in re.findall(r"<loc>(.*?)</loc>", sm.read_text(encoding="utf-8")) if "/gomi/" not in u]
     urls = keep + [f"{BASE}gomi/"] + [f"{BASE}gomi/{slugs[it['n']]}.html" for it in real]
-    from urllib.parse import quote
     sm.write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
                   + "".join(f"  <url>\n    <loc>{quote(u, safe=':/')}</loc>\n  </url>\n" for u in urls)
                   + "</urlset>\n", encoding="utf-8")
