@@ -28,6 +28,24 @@
 .crumb { font-size: 13px; color: var(--sub); }
 .crumb a { color: var(--sub); }
 </style>
+<script>
+(function () {
+  try {
+    if (localStorage.getItem("hitotema.count.off")) return;
+    var APP = "gominavi", KEY = "hitotema.page." + APP;
+    var page = decodeURIComponent(location.pathname.split("/").pop().replace(/\.html$/, "")) || "index";
+    var day = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+    var s = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!s || s.d !== day) s = { d: day, p: [] };
+    if (s.p.indexOf(page) >= 0) return;
+    s.p.push(page);
+    localStorage.setItem(KEY, JSON.stringify(s));
+    var ref = ""; try { ref = new URL(document.referrer).hostname; if (ref === location.hostname) ref = "self"; } catch (e) {}
+    navigator.sendBeacon("https://hitotema-count.hitotema-do.workers.dev/page",
+      new Blob([JSON.stringify({ a: APP, p: page, r: ref })], { type: "text/plain" }));
+  } catch (e) {}
+})();
+</script>
 </head>
 <body>
 <div class="wrap">

@@ -64,6 +64,27 @@ def kana_row(y):
             return row
     return "その他"
 
+# ひとてま堂の数え係（案内ページ用）：このページを、この端末で1日1回だけ「+1」する。
+# 送るのはアプリ名・ページ名・来たサイトの名前だけ（名前や端末を見分ける番号は送らない）。
+# 作者の端末（アプリ側で「数えない」にしたもの）は数えない
+COUNTER = r"""<script>
+(function () {
+  try {
+    if (localStorage.getItem("hitotema.count.off")) return;
+    var APP = "gominavi", KEY = "hitotema.page." + APP;
+    var page = decodeURIComponent(location.pathname.split("/").pop().replace(/\.html$/, "")) || "index";
+    var day = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+    var s = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!s || s.d !== day) s = { d: day, p: [] };
+    if (s.p.indexOf(page) >= 0) return;
+    s.p.push(page);
+    localStorage.setItem(KEY, JSON.stringify(s));
+    var ref = ""; try { ref = new URL(document.referrer).hostname; if (ref === location.hostname) ref = "self"; } catch (e) {}
+    navigator.sendBeacon("https://hitotema-count.hitotema-do.workers.dev/page",
+      new Blob([JSON.stringify({ a: APP, p: page, r: ref })], { type: "text/plain" }));
+  } catch (e) {}
+})();
+</script>"""
 
 def page(title, desc, url, body):
     return f"""<!doctype html>
@@ -96,6 +117,7 @@ def page(title, desc, url, body):
 .crumb {{ font-size: 13px; color: var(--sub); }}
 .crumb a {{ color: var(--sub); }}
 </style>
+{COUNTER}
 </head>
 <body>
 <div class="wrap">
