@@ -182,7 +182,7 @@ def main():
             parts.append(f'  <p class="small">別の呼び方：{e("、".join(al))}</p>')
         if kind:
             parts.append(f"  <h2>{e(kind)}の収集日</h2>")
-            parts.append(f"  <p>{e(kind)}の収集日は、町によって違います。ゴミナビで町名を選ぶと、次に出せる日がすぐ分かります。</p>")
+            parts.append(f"  <p>{e(kind)}の収集日は、町によって違います。ゴミナビで町名を選ぶと、次に出せる日がすぐ分かります。<a href=\"../machi/\">町名からごみの日を探す</a>こともできます。</p>")
         else:
             parts.append("  <h2>ほかの品目も調べる</h2>")
         q = quote(n)

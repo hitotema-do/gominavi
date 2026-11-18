@@ -4,7 +4,7 @@ GitHub Actions（.github/workflows/watch.yml）から、見張り番が「新し
 
     1. 市のオープンデータから、いちばん新しい年度の収集日程表（ZIP）と分別50音事典（CSV）を取得
     2. data/raw/ に置き、build_data.py で app/data/*.json を作り直す
-    3. build_holidays.py で、よくある質問の祝日の日付を作り直す。build_item_pages.py で品目ごとのページ（app/gomi/）を作り直す
+    3. build_holidays.py で、よくある質問の祝日の日付を作り直す。build_item_pages.py で品目ごとのページ（app/gomi/）を、build_town_pages.py で町名ごとのページ（app/machi/）を作り直す
     4. app/sw.js のキャッシュ番号を1つ上げる
     5. 安全のための点検（去年と比べて極端に違わないか、など）。1つでも引っかかったら何も公開せず、失敗として終わる
     6. 見張り番の記録（data/opendata_state.json）を新しくする
@@ -168,6 +168,7 @@ def main():
     run("scripts/build_data.py")
     run("scripts/build_holidays.py")
     run("scripts/build_item_pages.py")
+    run("scripts/build_town_pages.py")
     problems = validate(old, load_all(), year)
     if problems:
         raise SystemExit("点検で引っかかりました（公開しません）:\n- " + "\n- ".join(problems))
