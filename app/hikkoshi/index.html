@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>広島市に引っ越してきた方へ ごみの出し方・最初に知ること｜広島市ゴミナビ</title>
+<meta name="description" content="広島市に引っ越してきた方向けに、ごみの種類と出す回数、朝8時30分の締め切り、袋、迷いやすい分け方、引っ越しの大量ごみ、大型ごみの予約、家電、年末年始をまとめました（非公式）。">
+<link rel="canonical" href="https://hitotema-do.github.io/gominavi/hikkoshi/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="広島市ゴミナビ">
+<meta property="og:title" content="広島市に引っ越してきた方へ ごみの出し方・最初に知ること｜広島市ゴミナビ">
+<meta property="og:description" content="広島市に引っ越してきた方向けに、ごみの種類と出す回数、朝8時30分の締め切り、袋、迷いやすい分け方、引っ越しの大量ごみ、大型ごみの予約、家電、年末年始をまとめました（非公式）。">
+<meta property="og:url" content="https://hitotema-do.github.io/gominavi/hikkoshi/">
+<meta property="og:image" content="https://hitotema-do.github.io/gominavi/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../pages.css">
+<style>
+.small { font-size: 13px; color: var(--sub); }
+.crumb { font-size: 13px; color: var(--sub); } .crumb a { color: var(--sub); }
+.sched th { width: auto; }
+.box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 0 0 16px; } .box p { margin: 0 0 6px; }
+</style>
+<style>
+.cat { display: inline-block; color: #fff; font-weight: 700; padding: 4px 14px; border-radius: 999px; font-size: 18px; }
+.ans { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 0 0 16px; }
+.ans .how { font-size: 17px; margin: 12px 0 0; }
+.box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 0 0 16px; }
+.box p { margin: 0 0 6px; }
+.small { font-size: 13px; color: var(--sub); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; padding: 0; }
+.crumb { font-size: 13px; color: var(--sub); }
+.crumb a { color: var(--sub); }
+</style>
+<script>
+(function () {
+  try {
+    if (localStorage.getItem("hitotema.count.off")) return;
+    var APP = "gominavi", KEY = "hitotema.page." + APP;
+    var page = "引っ越しの方へ";
+    var day = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+    var s = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!s || s.d !== day) s = { d: day, p: [] };
+    if (s.p.indexOf(page) >= 0) return;
+    s.p.push(page);
+    localStorage.setItem(KEY, JSON.stringify(s));
+    var ref = ""; try { ref = new URL(document.referrer).hostname; if (ref === location.hostname) ref = "self"; } catch (e) {}
+    navigator.sendBeacon("https://hitotema-count.hitotema-do.workers.dev/page",
+      new Blob([JSON.stringify({ a: APP, p: page, r: ref })], { type: "text/plain" }));
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb"><a href="../">広島市ゴミナビ</a> ＞ 引っ越してきた方へ</p>
+  <h1>広島市に引っ越してきた方へ　ごみの出し方、最初に知ること</h1>
+  <p>ごみの分け方や収集日は、市町村ごとに違います。前に住んでいたまちと同じつもりで出すと、収集されないことがあります。広島市で最初に知っておきたいことを、まとめました。</p>
+
+  <h2>1. まず、自分の町の収集日を調べる</h2>
+  <p>収集日は町ごとに違います。町名を選ぶと、ごみの種類ごとの曜日と、次の収集日が分かります。</p>
+  <p><a class="btn" href="../?from=hikkoshi">ゴミナビで町を選んで、収集日を見る</a></p>
+  <p class="small"><a href="../machi/">町名の一覧から探す</a>こともできます。</p>
+
+  <h2>2. ごみの種類と、出す回数</h2>
+  <table class="sched">
+    <tr><th style="color:#C4421A">可燃ごみ</th><td>週2回</td></tr>
+    <tr><th style="color:#1F6FB2">リサイクルプラ・ペットボトル</th><td>週1回（同じ日に、袋を分けて）</td></tr>
+    <tr><th style="color:#6B4FA8">その他プラ</th><td>月2回</td></tr>
+    <tr><th style="color:#2C7A3F">資源ごみ・有害ごみ</th><td>月2回（同じ日に、袋を分けて）</td></tr>
+    <tr><th style="color:#4F5D6B">不燃ごみ</th><td>月2回</td></tr>
+    <tr><th style="color:#8A5A1E">大型ごみ</th><td>予約制・有料</td></tr>
+  </table>
+  <p>どれも、<strong>収集日の朝8時30分まで</strong>に出してください。</p>
+
+  <h2>3. 袋は、市の指定袋はありません</h2>
+  <ul>
+    <li>可燃ごみは、じょうぶな紙袋かポリ袋に入れて出します（土のう袋は不可）。</li>
+    <li>リサイクルプラ・その他プラ・不燃ごみは、中身が見える透明か半透明のポリ袋で出します。</li>
+  </ul>
+
+  <h2>4. 迷いやすいもの</h2>
+  <ul>
+    <li><strong>リサイクルプラ</strong>（週1回）は、商品の容器や包装に使われていたプラスチックです。例：お菓子やパンの袋、食品のパック・カップ、レジ袋。</li>
+    <li><strong>その他プラ</strong>（月2回）は、それ以外のプラスチック製品です。例：おもちゃ、CD・DVD、プラスチックのハンガー、スポンジ。</li>
+    <li><strong>ペットボトル</strong>は、キャップとラベルをはずし、中を水洗いしてつぶして出します。キャップとラベルはリサイクルプラです。</li>
+    <li><strong>電池</strong>は有害ごみです。</li>
+    <li>汚れが取れないプラスチックは、可燃ごみです。</li>
+  </ul>
+  <p>品目名から調べるときは、<a href="../gomi/">品目の一覧（50音順）</a>か、<a href="../?from=hikkoshi">ゴミナビの検索</a>が便利です。</p>
+
+  <h2>5. 引っ越しで、ごみがたくさん出るとき</h2>
+  <p>引っ越しなどで一度にたくさん出るごみは、市では収集しません。分別して自分で市の処理施設に持ち込むか、市の許可を受けた業者に頼んでください。許可のない回収業者は使わないでください。</p>
+
+  <h2>6. 大型ごみ（家具・ふとんなど）</h2>
+  <p>一番長い辺が30cm以上のもの（棒や板のようなものは1m以上）が大型ごみです。有料・予約制です。</p>
+  <ul>
+    <li>予約：大型ごみ受付センター（0570-082530 または 082-544-5300、平日9時〜18時）。<a href="https://ogatagomi.city.hiroshima.lg.jp/eco/view/hiroshima/top.html" rel="noopener">インターネット</a>やLINEなら24時間受付です。</li>
+    <li>締め切り：電話は収集日の3日前、インターネットは5日前まで（土日祝を除いて数えます）。</li>
+    <li>料金：品目ごとに決まった額の納付券（250円・1000円）をコンビニなどで買い、貼って出します。</li>
+  </ul>
+
+  <h2>7. エアコン・テレビ・冷蔵庫・洗濯機</h2>
+<div class="box">
+  <p><strong>家電リサイクル法の対象です。処分のしかたは3通りあります。</strong></p>
+  <p>1. 買い替える店、または購入した店に引き取ってもらう</p>
+  <p>2. 郵便局で家電リサイクル券を買ってリサイクル料金を払い、自分で指定の場所に持ち込む（予約不要）</p>
+  <p>3. 市に収集を頼む（リサイクル料金のほかに、収集運搬手数料が1台3,000円。大型ごみ受付センター 0570-082530 に申し込み）</p>
+</div>
+
+  <h2>8. 年末年始</h2>
+  <p>12月31日〜1月3日は、すべてのごみの収集がお休みです。大型ごみ受付センターは12月29日〜1月3日がお休みです。</p>
+
+  <p class="small">出典：広島市「家庭ごみの正しい出し方」「よくある質問と回答」など。判断に迷うものは、広島市のホームページか区の環境事業所でご確認ください。</p>
+
+  <div class="foot">
+    <nav aria-label="運営情報">
+      <a href="../about.html">このアプリについて</a>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <a href="../contact.html">お問い合わせ</a>
+      <a href="../hitotema.html">ひとてま堂について</a>
+    </nav>
+    <p>広島市の公開データ（家庭ごみの分別事典など）をもとに、ひとてま堂が作っています。広島市の公式サービスではありません。最新の情報や判断に迷うときは、広島市のホームページや各区の環境事業所で確かめてください。</p>
+  </div>
+</div>
+</body>
+</html>

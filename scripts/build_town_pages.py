@@ -189,7 +189,7 @@ def build_town(ward, town, data, start, same, fy):
         parts.append('  <ul class="links">' + "".join(
             f'<li><a href="{ward["code"]}-{t["id"]}.html">{e(t["n"])}</a></li>' for t in same) + "</ul>")
     parts.append("  <h2>ほかの町・品目を調べる</h2>")
-    parts.append('  <ul class="links"><li><a href="./">町名の一覧</a></li><li><a href="../gomi/">品目の分け方の一覧</a></li></ul>')
+    parts.append('  <ul class="links"><li><a href="./">町名の一覧</a></li><li><a href="../gomi/">品目の分け方の一覧</a></li><li><a href="../hikkoshi/">引っ越してきた方へ</a></li></ul>')
 
     body = "\n".join(parts) + "\n" + NEXT_JS
     html = page(title, desc, url, body)
@@ -222,6 +222,7 @@ def main():
             "  <h1>広島市のごみの日　町名から探す</h1>",
             f"  <p>広島市の{count}の町の、ごみの収集日（{fy}）をまとめました。町名を押すと、ごみの種類ごとの曜日と、祝日・年末年始のお休みが分かります。</p>",
             '  <p><a class="btn" href="../?from=townlist">ゴミナビで町を選んで、次に出せる日を見る</a></p>',
+            '  <p class="small">広島市に引っ越してきた方は、<a href="../hikkoshi/">ごみの出し方、最初に知ること</a>もどうぞ。</p>',
             '  <p class="links">' + " ".join(f'<a href="#w-{w["code"]}">{e(w["name"])}</a>' for w in wards) + "</p>"]
     for w in wards:
         body.append(f'  <h2 id="w-{w["code"]}">{e(w["name"])}</h2>')
